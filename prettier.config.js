@@ -1,6 +1,6 @@
 /** @type {import('prettier').Config} */
 const config = {
-  plugins: ['prettier-plugin-organize-imports', 'prettier-plugin-tailwindcss'],
+  plugins: ['prettier-plugin-tailwindcss'],
 
   // 기본 옵션
   printWidth: 100,
