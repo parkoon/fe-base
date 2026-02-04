@@ -24,4 +24,10 @@ dist-ssr
 *.sw?
 
 
+# Reference projects
 ref
+
+# Environment variables
+.env
+.env.local
+.env.*.local
