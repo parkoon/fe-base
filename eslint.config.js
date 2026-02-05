@@ -7,7 +7,6 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-// defineConfig: ESLint v9.22.0부터 제공 (tseslint.config 대체)
 export default defineConfig(
   // 린트 제외 경로
   // - dist: 빌드 결과물
