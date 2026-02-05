@@ -30,5 +30,9 @@ export const paths = {
       path: 'settings',
       getHref: () => '/app/settings',
     },
+    todos: {
+      path: 'todos',
+      getHref: () => '/app/todos',
+    },
   },
 } as const

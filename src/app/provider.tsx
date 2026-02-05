@@ -1,49 +1,39 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Suspense, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+import { Toaster } from 'sonner'
 
-import { queryConfig } from '@/lib/react-query'
+import { MainErrorFallback } from '@/components/errors'
+import { Spinner } from '@/components/ui'
+import { createQueryClient } from '@/lib/react-query'
 
 type AppProviderProps = {
   children: React.ReactNode
 }
 
-function ErrorFallback() {
-  return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-red-600">Something went wrong</h1>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-        >
-          Reload
-        </button>
-      </div>
-    </div>
-  )
-}
-
 function LoadingFallback() {
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      <div className="text-lg">Loading...</div>
+    <div className="flex h-screen items-center justify-center">
+      <Spinner size="lg" />
     </div>
   )
 }
 
 export function AppProvider({ children }: AppProviderProps) {
-  const [queryClient] = useState(() => new QueryClient({ defaultOptions: queryConfig }))
+  // React 19 안정성을 위해 useState로 QueryClient 관리
+  const [queryClient] = useState(() => createQueryClient())
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <QueryClientProvider client={queryClient}>
-          {import.meta.env.DEV && <ReactQueryDevtools />}
-          {children}
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </Suspense>
+    <ErrorBoundary FallbackComponent={MainErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+        <Toaster
+          position="top-right"
+          closeButton
+        />
+        {import.meta.env.DEV && <ReactQueryDevtools />}
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }

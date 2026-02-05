@@ -44,6 +44,10 @@ const router = createBrowserRouter([
         path: paths.app.settings.path,
         lazy: () => import('./routes/app/settings'),
       },
+      {
+        path: paths.app.todos.path,
+        lazy: () => import('./routes/app/todos'),
+      },
     ],
   },
   {
