@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router'
 
 import { usePostAuthLoginMutation } from '@/api/auth'
 import { paths } from '@/config/paths'
-import { getErrorMessage } from '@/lib/api-error'
+import { getErrorMessage } from '@/lib/api'
 import { useAuthStore } from '@/lib/auth'
 
 function LoginPage() {

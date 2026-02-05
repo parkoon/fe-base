@@ -1,6 +1,3 @@
-// Types
-export type { AuthResponse, LoginRequest, User } from './services'
-
 // Services
 export { getAuthMeService, postAuthLoginService, postAuthRefreshService } from './services'
 

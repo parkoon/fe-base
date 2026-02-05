@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { MutationConfig } from '@/lib/react-query'
 
-import type { LoginRequest } from './services'
 import { postAuthLoginService, postAuthRefreshService } from './services'
 
 // POST /auth/login
@@ -14,7 +13,7 @@ export function usePostAuthLoginMutation({ mutationConfig }: UsePostAuthLoginMut
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: LoginRequest) => postAuthLoginService(data),
+    mutationFn: postAuthLoginService,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['getAuthMe'] })
     },
@@ -31,8 +30,7 @@ export function usePostAuthRefreshMutation({
   mutationConfig,
 }: UsePostAuthRefreshMutationOptions = {}) {
   return useMutation({
-    mutationFn: (data: { refreshToken: string; expiresInMins?: number }) =>
-      postAuthRefreshService(data),
+    mutationFn: postAuthRefreshService,
     ...mutationConfig,
   })
 }

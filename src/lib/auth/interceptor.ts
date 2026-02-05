@@ -1,7 +1,7 @@
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 
 import { paths as routePaths } from '@/config/paths'
-import { ApiError, type ApiErrorResponse } from '@/lib/api-error'
+import { ApiError, type ApiErrorResponse } from '@/lib/api'
 
 import { getAccessToken, getRefreshToken, useAuthStore } from './store'
 

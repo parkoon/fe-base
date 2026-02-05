@@ -1,5 +1,5 @@
+import { createApiClient } from '@/lib/api'
 import { setupAuthInterceptor } from '@/lib/auth'
-import { createApiClient } from '@/lib/create-api-client'
 import type { paths } from '@/types/dummyjson'
 
 export const dummyjson = createApiClient<paths>('https://dummyjson.com')
