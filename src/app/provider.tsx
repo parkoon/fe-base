@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Suspense, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+import { HelmetProvider } from 'react-helmet-async'
 import { Toaster } from 'sonner'
 
 import { MainErrorFallback } from '@/components/errors'
@@ -27,16 +28,18 @@ export function AppProvider({ children }: AppProviderProps) {
 
   return (
     <ErrorBoundary FallbackComponent={MainErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<LoadingFallback />}>
-          <AuthLoader renderLoading={() => <LoadingFallback />}>{children}</AuthLoader>
-        </Suspense>
-        <Toaster
-          position="top-right"
-          closeButton
-        />
-        {import.meta.env.DEV && <ReactQueryDevtools />}
-      </QueryClientProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <Suspense fallback={<LoadingFallback />}>
+            <AuthLoader renderLoading={() => <LoadingFallback />}>{children}</AuthLoader>
+          </Suspense>
+          <Toaster
+            position="top-right"
+            closeButton
+          />
+          {import.meta.env.DEV && <ReactQueryDevtools />}
+        </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   )
 }
