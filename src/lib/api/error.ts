@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios'
 
 // API Error Response 타입 (서버에서 반환하는 에러 형태)
-export interface ApiErrorResponse {
+export type ApiErrorResponse = {
   message?: string
   error?: string
   statusCode?: number

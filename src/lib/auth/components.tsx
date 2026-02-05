@@ -4,7 +4,7 @@ import { paths } from '@/config/paths'
 
 import { useAuthStore } from './store'
 
-interface ProtectedRouteProps {
+type ProtectedRouteProps = {
   children: React.ReactNode
 }
 

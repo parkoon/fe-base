@@ -9,7 +9,7 @@ import { dummyjson } from '../dummyjson'
 export const postAuthRefreshService = (data: InferBody<paths, '/auth/refresh', 'post'>) =>
   dummyjson.POST('/auth/refresh', data)
 
-interface UsePostAuthRefreshMutationOptions {
+type UsePostAuthRefreshMutationOptions = {
   mutationConfig?: MutationConfig<typeof postAuthRefreshService>
 }
 

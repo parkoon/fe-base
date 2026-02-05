@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 
 import { queryConfig } from '@/lib/react-query'
 
-interface AppProviderProps {
+type AppProviderProps = {
   children: React.ReactNode
 }
 

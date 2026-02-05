@@ -5,7 +5,7 @@ import { ApiError, type ApiErrorResponse } from '@/lib/api'
 
 import { getAccessToken, getRefreshToken, useAuthStore } from './store'
 
-interface RefreshTokenConfig {
+type RefreshTokenConfig = {
   /** Refresh token API 호출 함수 */
   refreshTokenFn: (refreshToken: string) => Promise<{
     accessToken?: string

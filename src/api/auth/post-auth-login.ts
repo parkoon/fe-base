@@ -9,7 +9,7 @@ import { dummyjson } from '../dummyjson'
 export const postAuthLoginService = (data: InferBody<paths, '/auth/login', 'post'>) =>
   dummyjson.POST('/auth/login', data)
 
-interface UsePostAuthLoginMutationOptions {
+type UsePostAuthLoginMutationOptions = {
   mutationConfig?: MutationConfig<typeof postAuthLoginService>
 }
 

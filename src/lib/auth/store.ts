@@ -6,7 +6,7 @@ import type { components } from '@/types/dummyjson'
 type AuthResponse = components['schemas']['AuthResponse']
 
 // Auth State
-export interface AuthState {
+export type AuthState = {
   user: AuthResponse | null
   setUser: (user: AuthResponse | null) => void
   logout: () => void
