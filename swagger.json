@@ -1,0 +1,2462 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DummyJSON API",
+    "description": "DummyJSON provides a free fake REST API with placeholder JSON data for development and testing purposes.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "contact@dummyjson.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://dummyjson.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    { "name": "auth", "description": "Authentication operations" },
+    { "name": "users", "description": "User operations" },
+    { "name": "products", "description": "Product operations" },
+    { "name": "posts", "description": "Post operations" },
+    { "name": "comments", "description": "Comment operations" },
+    { "name": "carts", "description": "Cart operations" },
+    { "name": "todos", "description": "Todo operations" },
+    { "name": "quotes", "description": "Quote operations" },
+    { "name": "recipes", "description": "Recipe operations" }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login user",
+        "description": "Authenticate user with username and password",
+        "operationId": "loginUser",
+        "requestBody": {
+          "description": "Login credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Get current user",
+        "description": "Get authenticated user information",
+        "operationId": "getCurrentUser",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Refresh token",
+        "description": "Refresh access token using refresh token",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": { "type": "string" },
+                  "expiresInMins": { "type": "integer", "default": 60 }
+                },
+                "required": ["refreshToken"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get all users",
+        "description": "Retrieve a list of all users with pagination",
+        "operationId": "getAllUsers",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" },
+          { "$ref": "#/components/parameters/sortByParam" },
+          { "$ref": "#/components/parameters/orderParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UsersResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/add": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Add a new user",
+        "description": "Create a new user (simulated, not persisted)",
+        "operationId": "addUser",
+        "requestBody": {
+          "description": "User object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/search": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Search users",
+        "description": "Search users by query string",
+        "operationId": "searchUsers",
+        "parameters": [
+          { "$ref": "#/components/parameters/searchParam" },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UsersResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/filter": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Filter users",
+        "description": "Filter users by key-value pair",
+        "operationId": "filterUsers",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Field name to filter by",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "description": "Value to filter",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UsersResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get user by ID",
+        "description": "Retrieve a single user by ID",
+        "operationId": "getUserById",
+        "parameters": [
+          { "$ref": "#/components/parameters/idParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["users"],
+        "summary": "Update user",
+        "description": "Update user by ID (simulated)",
+        "operationId": "updateUser",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "description": "User object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["users"],
+        "summary": "Partial update user",
+        "description": "Partially update user by ID (simulated)",
+        "operationId": "patchUser",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "description": "Partial user object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Delete user",
+        "description": "Delete user by ID (simulated)",
+        "operationId": "deleteUser",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "User deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/carts": {
+      "get": {
+        "tags": ["users", "carts"],
+        "summary": "Get user carts",
+        "description": "Get all carts belonging to a user",
+        "operationId": "getUserCarts",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CartsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/posts": {
+      "get": {
+        "tags": ["users", "posts"],
+        "summary": "Get user posts",
+        "description": "Get all posts belonging to a user",
+        "operationId": "getUserPosts",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/todos": {
+      "get": {
+        "tags": ["users", "todos"],
+        "summary": "Get user todos",
+        "description": "Get all todos belonging to a user",
+        "operationId": "getUserTodos",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodosResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Get all products",
+        "description": "Retrieve a list of all products with pagination",
+        "operationId": "getAllProducts",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" },
+          { "$ref": "#/components/parameters/sortByParam" },
+          { "$ref": "#/components/parameters/orderParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/add": {
+      "post": {
+        "tags": ["products"],
+        "summary": "Add a new product",
+        "description": "Create a new product (simulated)",
+        "operationId": "addProduct",
+        "requestBody": {
+          "description": "Product object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProductInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/search": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Search products",
+        "description": "Search products by query string",
+        "operationId": "searchProducts",
+        "parameters": [
+          { "$ref": "#/components/parameters/searchParam" },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/categories": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Get product categories",
+        "description": "Get all product categories with URLs",
+        "operationId": "getProductCategories",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Category" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/category-list": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Get category list",
+        "description": "Get list of category names",
+        "operationId": "getCategoryList",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Get product by ID",
+        "description": "Retrieve a single product by ID",
+        "operationId": "getProductById",
+        "parameters": [
+          { "$ref": "#/components/parameters/idParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["products"],
+        "summary": "Update product",
+        "description": "Update product by ID (simulated)",
+        "operationId": "updateProduct",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProductInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["products"],
+        "summary": "Partial update product",
+        "description": "Partially update product by ID (simulated)",
+        "operationId": "patchProduct",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProductInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["products"],
+        "summary": "Delete product",
+        "description": "Delete product by ID (simulated)",
+        "operationId": "deleteProduct",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Product deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/category/{categoryName}": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Get products by category",
+        "description": "Retrieve products by category name",
+        "operationId": "getProductsByCategory",
+        "parameters": [
+          {
+            "name": "categoryName",
+            "in": "path",
+            "description": "Category name",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get all posts",
+        "description": "Retrieve a list of all posts with pagination",
+        "operationId": "getAllPosts",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" },
+          { "$ref": "#/components/parameters/sortByParam" },
+          { "$ref": "#/components/parameters/orderParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/add": {
+      "post": {
+        "tags": ["posts"],
+        "summary": "Add a new post",
+        "description": "Create a new post (simulated)",
+        "operationId": "addPost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PostInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/search": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Search posts",
+        "description": "Search posts by query string",
+        "operationId": "searchPosts",
+        "parameters": [
+          { "$ref": "#/components/parameters/searchParam" },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/tags": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get post tags",
+        "description": "Get all post tags with URLs",
+        "operationId": "getPostTags",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Tag" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/tag-list": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get tag list",
+        "description": "Get list of tag names",
+        "operationId": "getTagList",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get post by ID",
+        "description": "Retrieve a single post by ID",
+        "operationId": "getPostById",
+        "parameters": [
+          { "$ref": "#/components/parameters/idParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["posts"],
+        "summary": "Update post",
+        "description": "Update post by ID (simulated)",
+        "operationId": "updatePost",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PostInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["posts"],
+        "summary": "Partial update post",
+        "operationId": "patchPost",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PostInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Delete post",
+        "description": "Delete post by ID (simulated)",
+        "operationId": "deletePost",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Post deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/tag/{tag}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get posts by tag",
+        "description": "Retrieve posts by tag name",
+        "operationId": "getPostsByTag",
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "path",
+            "description": "Tag name",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/user/{userId}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get posts by user",
+        "description": "Retrieve posts by user ID",
+        "operationId": "getPostsByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{postId}/comments": {
+      "get": {
+        "tags": ["posts", "comments"],
+        "summary": "Get post comments",
+        "description": "Get all comments for a post",
+        "operationId": "getPostComments",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "Post ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CommentsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get all comments",
+        "description": "Retrieve a list of all comments with pagination",
+        "operationId": "getAllComments",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CommentsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/add": {
+      "post": {
+        "tags": ["comments"],
+        "summary": "Add a new comment",
+        "description": "Create a new comment (simulated)",
+        "operationId": "addComment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CommentInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get comment by ID",
+        "description": "Retrieve a single comment by ID",
+        "operationId": "getCommentById",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["comments"],
+        "summary": "Update comment",
+        "operationId": "updateComment",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CommentInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["comments"],
+        "summary": "Partial update comment",
+        "operationId": "patchComment",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CommentInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["comments"],
+        "summary": "Delete comment",
+        "operationId": "deleteComment",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Comment deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/post/{postId}": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get comments by post",
+        "description": "Retrieve comments by post ID",
+        "operationId": "getCommentsByPost",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "Post ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CommentsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts": {
+      "get": {
+        "tags": ["carts"],
+        "summary": "Get all carts",
+        "description": "Retrieve a list of all carts with pagination",
+        "operationId": "getAllCarts",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CartsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/add": {
+      "post": {
+        "tags": ["carts"],
+        "summary": "Add a new cart",
+        "description": "Create a new cart (simulated)",
+        "operationId": "addCart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CartInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cart created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/{id}": {
+      "get": {
+        "tags": ["carts"],
+        "summary": "Get cart by ID",
+        "description": "Retrieve a single cart by ID",
+        "operationId": "getCartById",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          },
+          "404": {
+            "description": "Cart not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["carts"],
+        "summary": "Update cart",
+        "operationId": "updateCart",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CartInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cart updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["carts"],
+        "summary": "Partial update cart",
+        "operationId": "patchCart",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CartInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cart updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["carts"],
+        "summary": "Delete cart",
+        "operationId": "deleteCart",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Cart deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/user/{userId}": {
+      "get": {
+        "tags": ["carts"],
+        "summary": "Get carts by user",
+        "description": "Retrieve carts by user ID",
+        "operationId": "getCartsByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CartsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos": {
+      "get": {
+        "tags": ["todos"],
+        "summary": "Get all todos",
+        "description": "Retrieve a list of all todos with pagination",
+        "operationId": "getAllTodos",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodosResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/add": {
+      "post": {
+        "tags": ["todos"],
+        "summary": "Add a new todo",
+        "description": "Create a new todo (simulated)",
+        "operationId": "addTodo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TodoInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Todo created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/random": {
+      "get": {
+        "tags": ["todos"],
+        "summary": "Get random todo",
+        "description": "Get a random todo",
+        "operationId": "getRandomTodo",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/random/{length}": {
+      "get": {
+        "tags": ["todos"],
+        "summary": "Get random todos",
+        "description": "Get multiple random todos",
+        "operationId": "getRandomTodos",
+        "parameters": [
+          {
+            "name": "length",
+            "in": "path",
+            "description": "Number of random todos",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Todo" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/{id}": {
+      "get": {
+        "tags": ["todos"],
+        "summary": "Get todo by ID",
+        "description": "Retrieve a single todo by ID",
+        "operationId": "getTodoById",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          },
+          "404": {
+            "description": "Todo not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["todos"],
+        "summary": "Update todo",
+        "operationId": "updateTodo",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TodoInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Todo updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["todos"],
+        "summary": "Partial update todo",
+        "operationId": "patchTodo",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TodoInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Todo updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["todos"],
+        "summary": "Delete todo",
+        "operationId": "deleteTodo",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Todo deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Todo" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/user/{userId}": {
+      "get": {
+        "tags": ["todos"],
+        "summary": "Get todos by user",
+        "description": "Retrieve todos by user ID",
+        "operationId": "getTodosByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodosResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quotes": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Get all quotes",
+        "description": "Retrieve a list of all quotes with pagination",
+        "operationId": "getAllQuotes",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuotesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quotes/random": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Get random quote",
+        "description": "Get a random quote",
+        "operationId": "getRandomQuote",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Quote" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quotes/random/{length}": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Get random quotes",
+        "description": "Get multiple random quotes",
+        "operationId": "getRandomQuotes",
+        "parameters": [
+          {
+            "name": "length",
+            "in": "path",
+            "description": "Number of random quotes",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Quote" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quotes/{id}": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Get quote by ID",
+        "description": "Retrieve a single quote by ID",
+        "operationId": "getQuoteById",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Quote" }
+              }
+            }
+          },
+          "404": {
+            "description": "Quote not found"
+          }
+        }
+      }
+    },
+    "/recipes": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Get all recipes",
+        "description": "Retrieve a list of all recipes with pagination",
+        "operationId": "getAllRecipes",
+        "parameters": [
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" },
+          { "$ref": "#/components/parameters/selectParam" },
+          { "$ref": "#/components/parameters/sortByParam" },
+          { "$ref": "#/components/parameters/orderParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RecipesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/add": {
+      "post": {
+        "tags": ["recipes"],
+        "summary": "Add a new recipe",
+        "description": "Create a new recipe (simulated)",
+        "operationId": "addRecipe",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RecipeInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recipe created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/search": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Search recipes",
+        "description": "Search recipes by query string",
+        "operationId": "searchRecipes",
+        "parameters": [
+          { "$ref": "#/components/parameters/searchParam" },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RecipesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/tags": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Get recipe tags",
+        "description": "Get all recipe tags",
+        "operationId": "getRecipeTags",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Get recipe by ID",
+        "description": "Retrieve a single recipe by ID",
+        "operationId": "getRecipeById",
+        "parameters": [
+          { "$ref": "#/components/parameters/idParam" },
+          { "$ref": "#/components/parameters/selectParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          },
+          "404": {
+            "description": "Recipe not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["recipes"],
+        "summary": "Update recipe",
+        "operationId": "updateRecipe",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RecipeInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recipe updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["recipes"],
+        "summary": "Partial update recipe",
+        "operationId": "patchRecipe",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RecipeInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recipe updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["recipes"],
+        "summary": "Delete recipe",
+        "operationId": "deleteRecipe",
+        "parameters": [{ "$ref": "#/components/parameters/idParam" }],
+        "responses": {
+          "200": {
+            "description": "Recipe deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/tag/{tag}": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Get recipes by tag",
+        "description": "Retrieve recipes by tag name",
+        "operationId": "getRecipesByTag",
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "path",
+            "description": "Tag name",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RecipesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/meal-type/{mealType}": {
+      "get": {
+        "tags": ["recipes"],
+        "summary": "Get recipes by meal type",
+        "description": "Retrieve recipes by meal type",
+        "operationId": "getRecipesByMealType",
+        "parameters": [
+          {
+            "name": "mealType",
+            "in": "path",
+            "description": "Meal type (Breakfast, Lunch, Dinner, Snack, etc.)",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/limitParam" },
+          { "$ref": "#/components/parameters/skipParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RecipesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test": {
+      "get": {
+        "tags": ["utilities"],
+        "summary": "Health check",
+        "description": "API health check endpoint",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "method": { "type": "string", "example": "GET" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image/{size}": {
+      "get": {
+        "tags": ["utilities"],
+        "summary": "Generate placeholder image",
+        "description": "Generate a placeholder image with custom size",
+        "operationId": "generateImage",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "path",
+            "description": "Image size (e.g., 200x200, 400x300)",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "background",
+            "in": "query",
+            "description": "Background color (hex without #)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "color",
+            "in": "query",
+            "description": "Text color (hex without #)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Image type",
+            "schema": {
+              "type": "string",
+              "enum": ["png", "jpeg", "webp"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated image",
+            "content": {
+              "image/png": {},
+              "image/jpeg": {},
+              "image/webp": {}
+            }
+          }
+        }
+      }
+    },
+    "/icon/{hash}/{size}": {
+      "get": {
+        "tags": ["utilities"],
+        "summary": "Generate identicon",
+        "description": "Generate a unique identicon based on hash",
+        "operationId": "generateIcon",
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "description": "Hash string for generating unique icon",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "size",
+            "in": "path",
+            "description": "Icon size in pixels",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated icon",
+            "content": {
+              "image/svg+xml": {},
+              "image/png": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Authorization using the Bearer scheme"
+      }
+    },
+    "parameters": {
+      "idParam": {
+        "name": "id",
+        "in": "path",
+        "description": "Resource ID",
+        "required": true,
+        "schema": { "type": "integer" }
+      },
+      "limitParam": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limit the number of items returned (default: 30)",
+        "schema": {
+          "type": "integer",
+          "default": 30
+        }
+      },
+      "skipParam": {
+        "name": "skip",
+        "in": "query",
+        "description": "Skip a number of items for pagination",
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "selectParam": {
+        "name": "select",
+        "in": "query",
+        "description": "Select specific fields (comma-separated)",
+        "schema": { "type": "string" }
+      },
+      "sortByParam": {
+        "name": "sortBy",
+        "in": "query",
+        "description": "Field to sort by",
+        "schema": { "type": "string" }
+      },
+      "orderParam": {
+        "name": "order",
+        "in": "query",
+        "description": "Sort order",
+        "schema": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        }
+      },
+      "searchParam": {
+        "name": "q",
+        "in": "query",
+        "description": "Search query string",
+        "schema": { "type": "string" }
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string", "example": "emilys" },
+          "password": { "type": "string", "example": "emilyspass" },
+          "expiresInMins": { "type": "integer", "default": 60 }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "gender": { "type": "string" },
+          "image": { "type": "string" },
+          "accessToken": { "type": "string" },
+          "refreshToken": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "maidenName": { "type": "string" },
+          "age": { "type": "integer" },
+          "gender": { "type": "string", "enum": ["male", "female"] },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "birthDate": { "type": "string", "format": "date" },
+          "image": { "type": "string", "format": "uri" },
+          "bloodGroup": { "type": "string" },
+          "height": { "type": "number" },
+          "weight": { "type": "number" },
+          "eyeColor": { "type": "string" },
+          "hair": { "$ref": "#/components/schemas/Hair" },
+          "ip": { "type": "string" },
+          "address": { "$ref": "#/components/schemas/Address" },
+          "macAddress": { "type": "string" },
+          "university": { "type": "string" },
+          "bank": { "$ref": "#/components/schemas/Bank" },
+          "company": { "$ref": "#/components/schemas/Company" },
+          "ein": { "type": "string" },
+          "ssn": { "type": "string" },
+          "userAgent": { "type": "string" },
+          "crypto": { "$ref": "#/components/schemas/Crypto" },
+          "role": { "type": "string", "enum": ["admin", "moderator", "user"] }
+        }
+      },
+      "UserInput": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "age": { "type": "integer" },
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "UsersResponse": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/User" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Hair": {
+        "type": "object",
+        "properties": {
+          "color": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "stateCode": { "type": "string" },
+          "postalCode": { "type": "string" },
+          "coordinates": { "$ref": "#/components/schemas/Coordinates" },
+          "country": { "type": "string" }
+        }
+      },
+      "Coordinates": {
+        "type": "object",
+        "properties": {
+          "lat": { "type": "number" },
+          "lng": { "type": "number" }
+        }
+      },
+      "Bank": {
+        "type": "object",
+        "properties": {
+          "cardExpire": { "type": "string" },
+          "cardNumber": { "type": "string" },
+          "cardType": { "type": "string" },
+          "currency": { "type": "string" },
+          "iban": { "type": "string" }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "department": { "type": "string" },
+          "name": { "type": "string" },
+          "title": { "type": "string" },
+          "address": { "$ref": "#/components/schemas/Address" }
+        }
+      },
+      "Crypto": {
+        "type": "object",
+        "properties": {
+          "coin": { "type": "string" },
+          "wallet": { "type": "string" },
+          "network": { "type": "string" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "price": { "type": "number" },
+          "discountPercentage": { "type": "number" },
+          "rating": { "type": "number" },
+          "stock": { "type": "integer" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "brand": { "type": "string" },
+          "sku": { "type": "string" },
+          "weight": { "type": "number" },
+          "dimensions": { "$ref": "#/components/schemas/Dimensions" },
+          "warrantyInformation": { "type": "string" },
+          "shippingInformation": { "type": "string" },
+          "availabilityStatus": { "type": "string" },
+          "reviews": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Review" }
+          },
+          "returnPolicy": { "type": "string" },
+          "minimumOrderQuantity": { "type": "integer" },
+          "meta": { "$ref": "#/components/schemas/ProductMeta" },
+          "images": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" }
+          },
+          "thumbnail": { "type": "string", "format": "uri" }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "price": { "type": "number" },
+          "stock": { "type": "integer" },
+          "brand": { "type": "string" }
+        }
+      },
+      "ProductsResponse": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Dimensions": {
+        "type": "object",
+        "properties": {
+          "width": { "type": "number" },
+          "height": { "type": "number" },
+          "depth": { "type": "number" }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "comment": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" },
+          "reviewerName": { "type": "string" },
+          "reviewerEmail": { "type": "string", "format": "email" }
+        }
+      },
+      "ProductMeta": {
+        "type": "object",
+        "properties": {
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "barcode": { "type": "string" },
+          "qrCode": { "type": "string", "format": "uri" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "body": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "reactions": { "$ref": "#/components/schemas/Reactions" },
+          "views": { "type": "integer" },
+          "userId": { "type": "integer" }
+        }
+      },
+      "PostInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "body": { "type": "string" },
+          "userId": { "type": "integer" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "PostsResponse": {
+        "type": "object",
+        "properties": {
+          "posts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Post" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Reactions": {
+        "type": "object",
+        "properties": {
+          "likes": { "type": "integer" },
+          "dislikes": { "type": "integer" }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "body": { "type": "string" },
+          "postId": { "type": "integer" },
+          "likes": { "type": "integer" },
+          "user": { "$ref": "#/components/schemas/CommentUser" }
+        }
+      },
+      "CommentUser": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "username": { "type": "string" },
+          "fullName": { "type": "string" }
+        }
+      },
+      "CommentInput": {
+        "type": "object",
+        "properties": {
+          "body": { "type": "string" },
+          "postId": { "type": "integer" },
+          "userId": { "type": "integer" }
+        }
+      },
+      "CommentsResponse": {
+        "type": "object",
+        "properties": {
+          "comments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Comment" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "products": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CartProduct" }
+          },
+          "total": { "type": "number" },
+          "discountedTotal": { "type": "number" },
+          "userId": { "type": "integer" },
+          "totalProducts": { "type": "integer" },
+          "totalQuantity": { "type": "integer" }
+        }
+      },
+      "CartProduct": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "price": { "type": "number" },
+          "quantity": { "type": "integer" },
+          "total": { "type": "number" },
+          "discountPercentage": { "type": "number" },
+          "discountedTotal": { "type": "number" },
+          "thumbnail": { "type": "string", "format": "uri" }
+        }
+      },
+      "CartInput": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "integer" },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "quantity": { "type": "integer" }
+              }
+            }
+          }
+        }
+      },
+      "CartsResponse": {
+        "type": "object",
+        "properties": {
+          "carts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Cart" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Todo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "todo": { "type": "string" },
+          "completed": { "type": "boolean" },
+          "userId": { "type": "integer" }
+        }
+      },
+      "TodoInput": {
+        "type": "object",
+        "properties": {
+          "todo": { "type": "string" },
+          "completed": { "type": "boolean" },
+          "userId": { "type": "integer" }
+        }
+      },
+      "TodosResponse": {
+        "type": "object",
+        "properties": {
+          "todos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Todo" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Quote": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "quote": { "type": "string" },
+          "author": { "type": "string" }
+        }
+      },
+      "QuotesResponse": {
+        "type": "object",
+        "properties": {
+          "quotes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Quote" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      },
+      "Recipe": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "ingredients": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "instructions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "prepTimeMinutes": { "type": "integer" },
+          "cookTimeMinutes": { "type": "integer" },
+          "servings": { "type": "integer" },
+          "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] },
+          "cuisine": { "type": "string" },
+          "caloriesPerServing": { "type": "integer" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "userId": { "type": "integer" },
+          "image": { "type": "string", "format": "uri" },
+          "rating": { "type": "number" },
+          "reviewCount": { "type": "integer" },
+          "mealType": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "RecipeInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "ingredients": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "instructions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "prepTimeMinutes": { "type": "integer" },
+          "cookTimeMinutes": { "type": "integer" },
+          "servings": { "type": "integer" },
+          "difficulty": { "type": "string" },
+          "cuisine": { "type": "string" }
+        }
+      },
+      "RecipesResponse": {
+        "type": "object",
+        "properties": {
+          "recipes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Recipe" }
+          },
+          "total": { "type": "integer" },
+          "skip": { "type": "integer" },
+          "limit": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

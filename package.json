@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "codegen": "openapi-typescript swagger.json -o src/types/dummyjson.d.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
@@ -41,6 +42,7 @@
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "openapi-typescript": "^7.10.1",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "~5.9.3",
