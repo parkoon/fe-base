@@ -6,10 +6,10 @@ import { useAuthStore } from '@/lib/auth'
 function AppRoot() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const setUser = useAuthStore((s) => s.setUser)
+  const logout = useAuthStore((s) => s.logout)
 
   const handleLogout = () => {
-    setUser(null)
+    logout()
     void navigate(paths.home.path)
   }
 
@@ -19,7 +19,7 @@ function AppRoot() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <h1 className="text-xl font-bold">Dashboard</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{user?.name}</span>
+            <span className="text-sm text-gray-600">{user?.firstName}</span>
             <button
               onClick={handleLogout}
               className="rounded bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300"
