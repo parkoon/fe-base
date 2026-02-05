@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    // 필수
+    "esbenp.prettier-vscode", // 코드 포맷팅
+    "dbaeumer.vscode-eslint", // 린트
+    "bradlc.vscode-tailwindcss", // Tailwind CSS 자동완성
+
+    // 선택
+    "dsznajder.es7-react-js-snippets", // React 스니펫 (rafce 등)
+    "christian-kohler.path-intellisense", // import 경로 자동완성
+    "wix.vscode-import-cost", // import 크기 표시
+    "streetsidesoftware.code-spell-checker", // 맞춤법 검사
+    "pkief.material-icon-theme", // 아이콘 테마
+    "pflannery.vscode-versionlens", // package.json 버전 표시
+    "naumovs.color-highlight", // 색상 코드 하이라이트
+    "formulahendry.auto-close-tag", // 태그 자동 닫기
+    "formulahendry.auto-rename-tag", // 태그 자동 이름 변경
+    "akamud.vscode-theme-onedark" // One Dark 테마
+  ]
+}
