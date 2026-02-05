@@ -1,10 +1,18 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { type QueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 
 import { getTodosQueryOptions, usePatchTodosIdMutation, usePostTodosAddMutation } from '@/api/todos'
 import { AsyncBoundary } from '@/components/errors'
 import { Button } from '@/components/ui/button'
 
+/**
+ * 라우트 진입 전 todos 데이터를 prefetch합니다.
+ * 컴포넌트 로딩과 데이터 fetch가 병렬로 실행되어 waterfall을 방지합니다.
+ */
+export const clientLoader = (queryClient: QueryClient) => async () => {
+  await queryClient.ensureQueryData(getTodosQueryOptions())
+  return null
+}
 function TodoList() {
   const { data } = useSuspenseQuery(getTodosQueryOptions())
 
