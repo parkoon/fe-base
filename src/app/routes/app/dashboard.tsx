@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../../lib/auth'
+import { useAuthStore } from '@/lib/auth'
 
 function DashboardPage() {
   const user = useAuthStore((s) => s.user)

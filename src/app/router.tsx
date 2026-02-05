@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
-import { paths } from '../config/paths'
-import { ProtectedRoute } from '../lib/auth'
+import { paths } from '@/config/paths'
+import { ProtectedRoute } from '@/lib/auth'
+
 import AppRoot from './routes/app/root'
 
 const router = createBrowserRouter([

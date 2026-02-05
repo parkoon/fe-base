@@ -1,7 +1,7 @@
 import { Link, Outlet, useNavigate } from 'react-router'
 
-import { paths } from '../../../config/paths'
-import { useAuthStore } from '../../../lib/auth'
+import { paths } from '@/config/paths'
+import { useAuthStore } from '@/lib/auth'
 
 function AppRoot() {
   const navigate = useNavigate()

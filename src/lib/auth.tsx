@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router'
 import { create } from 'zustand'
 
-import { paths } from '../config/paths'
+import { paths } from '@/config/paths'
 
 export interface User {
   id: string

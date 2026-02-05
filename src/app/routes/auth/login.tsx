@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearchParams } from 'react-router'
 
-import { paths } from '../../../config/paths'
-import { useAuthStore } from '../../../lib/auth'
+import { paths } from '@/config/paths'
+import { useAuthStore } from '@/lib/auth'
 
 function LoginPage() {
   const navigate = useNavigate()
