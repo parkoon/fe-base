@@ -1,10 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import type { InferBody } from '@/lib/api'
 import type { MutationConfig } from '@/lib/react-query'
+import type { paths } from '@/types/dummyjson'
 
-import { postAuthLoginService, postAuthRefreshService } from './services'
+import { dummyjson } from '../dummyjson'
 
-// POST /auth/login
+export const postAuthLoginService = (data: InferBody<paths, '/auth/login', 'post'>) =>
+  dummyjson.POST('/auth/login', data)
+
 interface UsePostAuthLoginMutationOptions {
   mutationConfig?: MutationConfig<typeof postAuthLoginService>
 }
@@ -17,20 +21,6 @@ export function usePostAuthLoginMutation({ mutationConfig }: UsePostAuthLoginMut
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['getAuthMe'] })
     },
-    ...mutationConfig,
-  })
-}
-
-// POST /auth/refresh
-interface UsePostAuthRefreshMutationOptions {
-  mutationConfig?: MutationConfig<typeof postAuthRefreshService>
-}
-
-export function usePostAuthRefreshMutation({
-  mutationConfig,
-}: UsePostAuthRefreshMutationOptions = {}) {
-  return useMutation({
-    mutationFn: postAuthRefreshService,
     ...mutationConfig,
   })
 }
