@@ -55,6 +55,22 @@ export default defineConfig(
       'simple-import-sort/exports': 'error',
 
       // ==========================================
+      // Import 제한
+      // ==========================================
+      // dayjs 직접 import 금지 → @/lib/dayjs의 $dayjs 사용 강제
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'dayjs',
+              message: "dayjs 직접 import 금지. import { $dayjs } from '@/lib/dayjs' 사용하세요.",
+            },
+          ],
+        },
+      ],
+
+      // ==========================================
       // TypeScript
       // ==========================================
       // 사용하지 않는 변수 에러, 단 _로 시작하는 인자는 무시
@@ -70,5 +86,12 @@ export default defineConfig(
   },
   // Prettier와 충돌하는 ESLint 규칙 비활성화
   // 포매팅은 Prettier가, 코드 품질은 ESLint가 담당
-  eslintConfigPrettier
+  eslintConfigPrettier,
+  // dayjs wrapper 파일은 원본 dayjs import 허용
+  {
+    files: ['src/lib/dayjs.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  }
 )
