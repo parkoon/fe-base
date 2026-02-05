@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -6,7 +7,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-export default tseslint.config(
+// defineConfig: ESLint v9.22.0부터 제공 (tseslint.config 대체)
+export default defineConfig(
   // 린트 제외 경로
   // - dist: 빌드 결과물
   // - ref, .ref: 참고용 코드 (bulletproof-react 등)
