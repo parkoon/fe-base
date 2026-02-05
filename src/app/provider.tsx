@@ -1,5 +1,9 @@
-import { Suspense } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Suspense, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+
+import { queryConfig } from '@/lib/react-query'
 
 interface AppProviderProps {
   children: React.ReactNode
@@ -30,9 +34,16 @@ function LoadingFallback() {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
+  const [queryClient] = useState(() => new QueryClient({ defaultOptions: queryConfig }))
+
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <QueryClientProvider client={queryClient}>
+          {import.meta.env.DEV && <ReactQueryDevtools />}
+          {children}
+        </QueryClientProvider>
+      </ErrorBoundary>
     </Suspense>
   )
 }
