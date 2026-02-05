@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 
 import { MainErrorFallback } from '@/components/errors'
 import { Spinner } from '@/components/ui'
+import { AuthLoader } from '@/lib/auth'
 import { createQueryClient } from '@/lib/react-query'
 
 type AppProviderProps = {
@@ -27,7 +28,9 @@ export function AppProvider({ children }: AppProviderProps) {
   return (
     <ErrorBoundary FallbackComponent={MainErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+        <Suspense fallback={<LoadingFallback />}>
+          <AuthLoader renderLoading={() => <LoadingFallback />}>{children}</AuthLoader>
+        </Suspense>
         <Toaster
           position="top-right"
           closeButton
