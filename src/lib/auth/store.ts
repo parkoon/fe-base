@@ -1,11 +1,8 @@
-import { Navigate, useLocation } from 'react-router'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { paths } from '@/config/paths'
 import type { components } from '@/types/dummyjson'
 
-// Import type directly from dummyjson types to avoid circular dependency
 type AuthResponse = components['schemas']['AuthResponse']
 
 // Auth State
@@ -32,29 +29,13 @@ export const useAuthStore = create<AuthState>()(
   )
 )
 
-// Token getter (for interceptors)
+// Token getters (for interceptors)
 export function getAccessToken(): string | null {
   const state = useAuthStore.getState()
   return state.user?.accessToken ?? null
 }
 
-// Protected Route Component
-interface ProtectedRouteProps {
-  children: React.ReactNode
-}
-
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const user = useAuthStore((s) => s.user)
-  const location = useLocation()
-
-  if (!user) {
-    return (
-      <Navigate
-        to={paths.auth.login.getHref(location.pathname)}
-        replace
-      />
-    )
-  }
-
-  return <>{children}</>
+export function getRefreshToken(): string | null {
+  const state = useAuthStore.getState()
+  return state.user?.refreshToken ?? null
 }

@@ -1,9 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { paths } from '@/config/paths'
-import { ProtectedRoute } from '@/lib/auth'
+import { ProtectedRoute, PublicRoute } from '@/lib/auth'
 
 import AppRoot from './routes/app/root'
+import { Component as AuthLogin } from './routes/auth/login'
+import { Component as AuthRegister } from './routes/auth/register'
 
 const router = createBrowserRouter([
   {
@@ -12,11 +14,19 @@ const router = createBrowserRouter([
   },
   {
     path: paths.auth.login.path,
-    lazy: () => import('./routes/auth/login'),
+    element: (
+      <PublicRoute>
+        <AuthLogin />
+      </PublicRoute>
+    ),
   },
   {
     path: paths.auth.register.path,
-    lazy: () => import('./routes/auth/register'),
+    element: (
+      <PublicRoute>
+        <AuthRegister />
+      </PublicRoute>
+    ),
   },
   {
     path: paths.app.root.path,

@@ -7,7 +7,7 @@ function DashboardPage() {
     <div>
       <h2 className="text-2xl font-bold">대시보드</h2>
       <p className="mt-2 text-gray-600">
-        환영합니다, <span className="font-semibold">{user?.name}</span>님!
+        환영합니다, <span className="font-semibold">{user?.firstName}</span>님!
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
