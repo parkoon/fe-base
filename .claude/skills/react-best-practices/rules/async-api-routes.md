@@ -1,0 +1,35 @@
+---
+title: API 라우트에서 워터폴 체인 방지
+impact: CRITICAL
+impactDescription: 2-10배 개선
+tags: api-routes, server-actions, waterfalls, parallelization
+---
+
+## API 라우트에서 워터폴 체인 방지
+
+API 라우트와 Server Action에서, 아직 await하지 않더라도 독립적인 연산을 즉시 시작합니다.
+
+**잘못된 예 (config가 auth를 기다리고, data가 둘 다 기다림):**
+
+```typescript
+export async function GET(request: Request) {
+  const session = await auth()
+  const config = await fetchConfig()
+  const data = await fetchData(session.user.id)
+  return Response.json({ data, config })
+}
+```
+
+**올바른 예 (auth와 config를 즉시 시작):**
+
+```typescript
+export async function GET(request: Request) {
+  const sessionPromise = auth()
+  const configPromise = fetchConfig()
+  const session = await sessionPromise
+  const [config, data] = await Promise.all([configPromise, fetchData(session.user.id)])
+  return Response.json({ data, config })
+}
+```
+
+더 복잡한 의존성 체인이 있는 연산의 경우, `better-all`을 사용하여 자동으로 병렬성을 극대화할 수 있습니다 (의존성 기반 병렬화 참조).

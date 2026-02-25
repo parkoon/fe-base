@@ -15,6 +15,3 @@ dist
 # editor
 .idea
 *.sw?
-
-# reference projects
-ref
