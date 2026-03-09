@@ -28,3 +28,4 @@ function LandingPage() {
 }
 
 export const Component = LandingPage
+export default LandingPage

@@ -19,3 +19,4 @@ function SettingsPage() {
 }
 
 export const Component = SettingsPage
+export default SettingsPage

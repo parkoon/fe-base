@@ -29,3 +29,4 @@ function DashboardPage() {
 }
 
 export const Component = DashboardPage
+export default DashboardPage
