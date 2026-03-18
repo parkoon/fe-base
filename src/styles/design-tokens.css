@@ -1,0 +1,134 @@
+@theme {
+  /* ===== Font ===== */
+  --font-sans:
+    'Pretendard', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+
+  /* ===== Primary (Orange) ===== */
+  --color-primary-50: #fff7f2;
+  --color-primary-100: #fff1e8;
+  --color-primary-200: #ffdfcb;
+  --color-primary-300: #ffb485;
+  --color-primary-400: #ff7f32;
+  --color-primary-500: #ff6200;
+  --color-primary-600: #f45c00;
+  --color-primary-700: #d55000;
+  --color-primary-800: #b74500;
+  --color-primary-900: #802c0b;
+
+  /* ===== Gray ===== */
+  --color-gray-50: #f9f9f7;
+  --color-gray-100: #f2f2ef;
+  --color-gray-200: #eaeae6;
+  --color-gray-300: #d9d9d5;
+  --color-gray-400: #999991;
+  --color-gray-500: #73736d;
+  --color-gray-600: #5c5c55;
+  --color-gray-700: #383834;
+  --color-gray-800: #242422;
+  --color-gray-900: #000000;
+
+  /* ===== Yellow ===== */
+  --color-yellow-50: #fffdf4;
+  --color-yellow-100: #fff9e2;
+  --color-yellow-200: #fff1b8;
+  --color-yellow-300: #ffde8d;
+  --color-yellow-400: #ffc56e;
+  --color-yellow-500: #ffa044;
+  --color-yellow-600: #e6882e;
+  --color-yellow-700: #cc7319;
+  --color-yellow-800: #975a00;
+  --color-yellow-900: #704209;
+
+  /* ===== Purple ===== */
+  --color-purple-50: #f9f5ff;
+  --color-purple-100: #eee5fb;
+  --color-purple-200: #dfcaf8;
+  --color-purple-300: #c7a5f1;
+  --color-purple-400: #a073e6;
+  --color-purple-500: #7d55c7;
+  --color-purple-600: #6e42c1;
+  --color-purple-700: #633aaf;
+  --color-purple-800: #542ea3;
+  --color-purple-900: #492b87;
+
+  /* ===== Blue ===== */
+  --color-blue-50: #f2f8ff;
+  --color-blue-100: #ddebf8;
+  --color-blue-200: #c3dcf5;
+  --color-blue-300: #8fbdec;
+  --color-blue-400: #5b9ee3;
+  --color-blue-500: #418fde;
+  --color-blue-600: #2780d9;
+  --color-blue-700: #2170c0 --color-blue-800: #18528c;
+  --color-blue-900: #153b7c;
+
+  /* ===== Lemon ===== */
+  --color-lemon-50: #fffbf0;
+  --color-lemon-100: #faf2d2;
+  --color-lemon-200: #f8e59a;
+  --color-lemon-300: #ffdd50;
+  --color-lemon-400: #ffd008;
+  --color-lemon-500: #ffb400;
+  --color-lemon-600: #e8a400;
+  --color-lemon-700: #ba8400;
+  --color-lemon-800: #9e7000;
+  --color-lemon-900: #735100;
+
+  /* ===== Pink ===== */
+  --color-pink-50: #fcf4f7;
+  --color-pink-100: #f9d1df;
+  --color-pink-200: #f5b6cd;
+  --color-pink-300: #f19bbb;
+  --color-pink-400: #f06c88;
+  --color-pink-500: #f03c63;
+  --color-pink-600: #de1f48;
+  --color-pink-700: #c91239;
+  --color-pink-800: #b00b2e;
+  --color-pink-900: #802c0b;
+
+  /* ===== Sky ===== */
+  --color-sky-50: #f2fafc;
+  --color-sky-100: #d4eef6;
+  --color-sky-200: #b7e2f0;
+  --color-sky-300: #99d6ea;
+  --color-sky-400: #5ebede;
+  --color-sky-500: #2aa3ca;
+  --color-sky-600: #248bad;
+  --color-sky-700: #1e738f;
+  --color-sky-800: #175b72;
+  --color-sky-900: #114454;
+}
+
+/* ===== Semantic Tokens ===== */
+:root {
+  /* Action */
+  --color-action-primary: var(--color-primary-500);
+  --color-action-primary-pressed: var(--color-primary-700);
+  --color-action-secondary: var(--color-gray-500);
+  --color-action-secondary-pressed: var(--color-gray-600);
+  --color-action-link: var(--color-blue-500);
+  --color-action-hover: var(--color-primary-300);
+
+  /* Semantic (Status) */
+  --color-semantic-error: var(--color-pink-500);
+  --color-semantic-success: #42ba61;
+  --color-semantic-info: var(--color-blue-500);
+
+  /* Background */
+  --color-bg-background: #ffffff;
+  --color-bg-surface: var(--color-gray-50);
+  --color-bg-divider: var(--color-gray-200);
+  --color-bg-scrim: var(--color-gray-400);
+
+  /* Text */
+  --color-text-title: var(--color-gray-900);
+  --color-text-subtitle: var(--color-gray-800);
+  --color-text-tertiary: var(--color-gray-600);
+  --color-text-tab: var(--color-gray-400);
+  --color-text-disabled: var(--color-gray-200);
+
+  /* Stroke */
+  --color-stroke-button: var(--color-gray-400);
+  --color-stroke-tab: var(--color-gray-400);
+  --color-stroke-disabled: var(--color-gray-300);
+}

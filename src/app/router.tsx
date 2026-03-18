@@ -77,6 +77,10 @@ const createAppRouter = (queryClient: QueryClient) =>
       ],
     },
     {
+      path: '/dev/design-tokens',
+      lazy: () => import('./routes/dev/design-tokens').then(convert(queryClient)),
+    },
+    {
       path: '*',
       lazy: () => import('./routes/not-found').then(convert(queryClient)),
     },
