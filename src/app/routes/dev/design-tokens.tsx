@@ -298,6 +298,7 @@ function isDark(hex: string) {
 export default function DesignTokensPage() {
   return (
     <div className="min-h-screen bg-white px-6 py-12 sm:px-10">
+      <h1 className="text-primary">hello</h1>
       <div className="mx-auto max-w-6xl">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Design Tokens</h1>
         <p className="mt-2 text-sm text-gray-600">Primitive & Semantic 토큰 검증 페이지</p>

@@ -101,6 +101,14 @@
 
 /* ===== Semantic Tokens ===== */
 :root {
+  --color-primary: var(--color-orange-400);
+  --color-yellow: var(--color-yellow-400);
+  --color-purple: var(--color-purple-500);
+  --color-blue: var(--color-blue-500);
+  --color-lemon: var(--color-lemon-200);
+  --color-pink: var(--color-pink-200);
+  --color-sky: var(--color-sky-300);
+
   /* Action */
   --color-action-primary: var(--color-primary-500);
   --color-action-primary-pressed: var(--color-primary-700);
