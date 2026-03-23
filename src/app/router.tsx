@@ -7,7 +7,6 @@ import { ProtectedRoute, PublicRoute } from '@/lib/auth'
 
 import AppRoot from './routes/app/root'
 import { Component as AuthLogin } from './routes/auth/login'
-import { Component as AuthRegister } from './routes/auth/register'
 
 /**
  * lazy 모듈을 변환하여 clientLoader/clientAction에 QueryClient를 주입합니다.
@@ -43,14 +42,6 @@ const createAppRouter = (queryClient: QueryClient) =>
       element: (
         <PublicRoute>
           <AuthLogin />
-        </PublicRoute>
-      ),
-    },
-    {
-      path: paths.auth.register.path,
-      element: (
-        <PublicRoute>
-          <AuthRegister />
         </PublicRoute>
       ),
     },
