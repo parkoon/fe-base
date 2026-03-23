@@ -35,14 +35,14 @@ export function AuthLoader({ children, renderLoading }: AuthLoaderProps) {
 
   // /auth/me 성공 시 user 정보 업데이트 (한 번만)
   useEffect(() => {
-    if (data && user && !hasSynced.current) {
-      hasSynced.current = true
-      setUser({
-        ...user,
-        ...data,
-      })
+    if (data && !hasSynced.current) {
+      const currentUser = useAuthStore.getState().user
+      if (currentUser) {
+        hasSynced.current = true
+        setUser({ ...currentUser, ...data })
+      }
     }
-  }, [data, user, setUser])
+  }, [data, setUser])
 
   // 토큰이 있고 검증 중일 때 로딩 표시
   if (user?.accessToken && isLoading) {

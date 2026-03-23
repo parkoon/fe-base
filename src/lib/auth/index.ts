@@ -1,6 +1,6 @@
 // Store
-export type { AuthState } from './store'
-export { getAccessToken, getRefreshToken, useAuthStore } from './store'
+export type { AuthState, UserRole } from './store'
+export { getAccessToken, getRefreshToken, getRoleLevel, useAuthStore } from './store'
 
 // Components
 export { AuthLoader } from './auth-loader'

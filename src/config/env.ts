@@ -3,6 +3,11 @@ import * as z from 'zod'
 const createEnv = () => {
   const EnvSchema = z.object({
     API_URL: z.string(),
+    QUERYPIE_API_URL: z.string().optional(),
+    IDLE_TIMEOUT_MS: z
+      .string()
+      .transform((s) => Number(s))
+      .optional(),
     ENABLE_API_MOCKING: z
       .string()
       .refine((s) => s === 'true' || s === 'false')

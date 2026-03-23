@@ -5,11 +5,28 @@ import type { components } from '@/types/dummyjson'
 
 type AuthResponse = components['schemas']['AuthResponse']
 
+// 사용자 역할
+export type UserRole = 'USER' | 'APPROVER' | 'ADMIN'
+
 // Auth State
 export type AuthState = {
   user: AuthResponse | null
+  role: UserRole
   setUser: (user: AuthResponse | null) => void
+  setRole: (role: UserRole) => void
   logout: () => void
+}
+
+// 역할 레벨 (권한 비교용)
+export function getRoleLevel(role: UserRole): number {
+  switch (role) {
+    case 'ADMIN':
+      return 2
+    case 'APPROVER':
+      return 1
+    case 'USER':
+      return 0
+  }
 }
 
 // Token 키 상수
@@ -20,8 +37,10 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
+      role: 'USER' as UserRole,
       setUser: (user) => set({ user }),
-      logout: () => set({ user: null }),
+      setRole: (role) => set({ role }),
+      logout: () => set({ user: null, role: 'USER' }),
     }),
     {
       name: TOKEN_KEY,
