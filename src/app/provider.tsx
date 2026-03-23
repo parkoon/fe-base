@@ -7,6 +7,7 @@ import { Toaster } from 'sonner'
 
 import { MainErrorFallback } from '@/components/errors'
 import { Spinner } from '@/components/ui'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { AuthLoader } from '@/lib/auth'
 import { createQueryClient } from '@/lib/react-query'
 
@@ -31,7 +32,9 @@ export function AppProvider({ children }: AppProviderProps) {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <Suspense fallback={<LoadingFallback />}>
-            <AuthLoader renderLoading={() => <LoadingFallback />}>{children}</AuthLoader>
+            <AuthLoader renderLoading={() => <LoadingFallback />}>
+              <TooltipProvider>{children}</TooltipProvider>
+            </AuthLoader>
           </Suspense>
           <Toaster
             position="top-right"
