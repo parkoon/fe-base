@@ -126,6 +126,10 @@ const createAppRouter = (queryClient: QueryClient) =>
           element: <AdminGuard />,
           children: [
             {
+              path: paths.app.admin.datasources.path,
+              lazy: () => import('./routes/app/admin/datasources').then(convert(queryClient)),
+            },
+            {
               path: paths.app.admin.users.path,
               lazy: () => import('./routes/app/admin/users').then(convert(queryClient)),
             },

@@ -68,6 +68,10 @@ export const paths = {
 
     // 관리자
     admin: {
+      datasources: {
+        path: 'admin/datasources',
+        getHref: () => '/app/admin/datasources',
+      },
       users: {
         path: 'admin/users',
         getHref: () => '/app/admin/users',

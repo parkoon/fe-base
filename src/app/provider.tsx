@@ -7,7 +7,9 @@ import { Toaster } from 'sonner'
 import { MainErrorFallback } from '@/components/errors'
 import { Spinner } from '@/components/ui'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { AuthLoader } from '@/lib/auth'
+import { env } from '@/config/env'
+import { useIdleTimeout } from '@/hooks/use-idle-timeout'
+import { AuthLoader, useAuthStore } from '@/lib/auth'
 import { createQueryClient } from '@/lib/react-query'
 
 const ReactQueryDevtools = lazy(() =>
@@ -26,6 +28,21 @@ function LoadingFallback() {
   )
 }
 
+const DEFAULT_IDLE_TIMEOUT_MS = 30 * 60 * 1000 // 30분
+
+function IdleTimeoutHandler() {
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+
+  useIdleTimeout({
+    timeoutMs: env.IDLE_TIMEOUT_MS ?? DEFAULT_IDLE_TIMEOUT_MS,
+    onIdle: logout,
+    enabled: !!user?.accessToken,
+  })
+
+  return null
+}
+
 export function AppProvider({ children }: AppProviderProps) {
   // React 19 안정성을 위해 useState로 QueryClient 관리
   const [queryClient] = useState(() => createQueryClient())
@@ -36,6 +53,7 @@ export function AppProvider({ children }: AppProviderProps) {
         <QueryClientProvider client={queryClient}>
           <Suspense fallback={<LoadingFallback />}>
             <AuthLoader renderLoading={() => <LoadingFallback />}>
+              <IdleTimeoutHandler />
               <TooltipProvider>{children}</TooltipProvider>
             </AuthLoader>
           </Suspense>

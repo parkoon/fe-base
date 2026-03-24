@@ -1,6 +1,7 @@
 import {
   ClipboardCheckIcon,
   DatabaseIcon,
+  HardDriveIcon,
   HistoryIcon,
   LayoutDashboardIcon,
   ScrollTextIcon,
@@ -83,6 +84,11 @@ const navGroups: NavGroup[] = [
     label: '관리자',
     minRole: 'ADMIN',
     items: [
+      {
+        title: 'DataSource 관리',
+        url: paths.app.admin.datasources.getHref(),
+        icon: <HardDriveIcon />,
+      },
       {
         title: '사용자 관리',
         url: paths.app.admin.users.getHref(),
