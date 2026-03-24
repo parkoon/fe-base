@@ -13,7 +13,6 @@ import {
 import * as React from 'react'
 
 import { NavMain } from '@/components/nav-main'
-import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { paths } from '@/config/paths'
 import type { UserRole } from '@/lib/auth'
@@ -114,7 +114,6 @@ function hasAccess(userRole: UserRole, minRole?: UserRole): boolean {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = useAuthStore((s) => s.user)
   const role = useAuthStore((s) => s.role)
 
   const visibleGroups = navGroups.filter((group) => hasAccess(role, group.minRole))
@@ -154,13 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser
-          user={{
-            name: user?.firstName ?? '사용자',
-            email: user?.email ?? '',
-            avatar: user?.image ?? '',
-          }}
-        />
+        <SidebarTrigger className="text-gray-500" />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
