@@ -8,7 +8,7 @@ type StatusBadgeProps = {
   className?: string
 }
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function MyTableStatusBadge({ status, className }: StatusBadgeProps) {
   const config = APPROVAL_STATUS_MAP[status]
 
   return (

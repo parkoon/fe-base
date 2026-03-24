@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router'
 
-import type { StatusFilter } from './types'
+import type { StatusFilter } from '../_components/types'
 
 export function usePermissionFilter() {
   const [searchParams, setSearchParams] = useSearchParams()

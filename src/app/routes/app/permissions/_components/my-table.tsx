@@ -4,12 +4,12 @@ import { useMemo } from 'react'
 import { getPermissionsRequestsQueryOptions } from '@/api/permissions/get-permissions-requests'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-import { PermissionTableEmpty } from './permission-table-empty'
-import { PermissionTableRow } from './permission-table-row'
+import { usePermissionFilter } from '../_hooks/use-permission-filter'
+import { MyTableEmpty } from './my-table-empty'
+import { MyTableRow } from './my-table-row'
 import { matchesFilter } from './types'
-import { usePermissionFilter } from './use-permission-filter'
 
-export function PermissionTable() {
+export function MyTable() {
   const { currentFilter } = usePermissionFilter()
   const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 
@@ -35,10 +35,10 @@ export function PermissionTable() {
           </TableHeader>
           <TableBody>
             {filteredItems.length === 0 ? (
-              <PermissionTableEmpty />
+              <MyTableEmpty />
             ) : (
               filteredItems.map((item) => (
-                <PermissionTableRow
+                <MyTableRow
                   key={item.id}
                   item={item}
                 />

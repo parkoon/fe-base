@@ -1,14 +1,14 @@
 import { ChevronRightIcon, DatabaseIcon } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { StatusBadge } from '@/components/status-badge'
+import { MyTableStatusBadge } from '@/app/routes/app/permissions/_components/my-table-status-badge'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { paths } from '@/config/paths'
 import { $dayjs } from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 import type { PermissionRequest } from '@/types/manual/permissions'
 
-export function PermissionTableRow({ item }: { item: PermissionRequest }) {
+export function MyTableRow({ item }: { item: PermissionRequest }) {
   return (
     <TableRow className="group">
       <TableCell className="text-muted-foreground pl-4 font-mono text-xs">{item.id}</TableCell>
@@ -40,7 +40,7 @@ export function PermissionTableRow({ item }: { item: PermissionRequest }) {
         {$dayjs(item.createdAt).format('YY.MM.DD')}
       </TableCell>
       <TableCell>
-        <StatusBadge status={item.status} />
+        <MyTableStatusBadge status={item.status} />
       </TableCell>
       <TableCell className="pr-4">
         <Link

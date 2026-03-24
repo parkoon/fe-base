@@ -5,11 +5,11 @@ import { getPermissionsRequestsQueryOptions } from '@/api/permissions/get-permis
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+import { usePermissionFilter } from '../_hooks/use-permission-filter'
 import type { StatusFilter } from './types'
 import { matchesFilter, STATUS_FILTERS } from './types'
-import { usePermissionFilter } from './use-permission-filter'
 
-export function PermissionFilterTabs() {
+export function MyFilterTabs() {
   const { currentFilter, setFilter } = usePermissionFilter()
   const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 

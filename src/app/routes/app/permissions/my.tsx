@@ -5,9 +5,9 @@ import { AsyncBoundary } from '@/components/errors/query-error-boundary'
 import { Button } from '@/components/ui/button'
 import { paths } from '@/config/paths'
 
-import { FilterTabsSkeleton, PermissionFilterTabs } from './_components/permission-filter-tabs'
+import { FilterTabsSkeleton, MyFilterTabs } from './_components/my-filter-tabs'
+import { PermissionTableSkeleton } from './_components/my-table-skeleton'
 import { PermissionTable } from './_components/permission-table'
-import { PermissionTableSkeleton } from './_components/permission-table-skeleton'
 
 function MyPermissionsPage() {
   return (
@@ -33,7 +33,7 @@ function MyPermissionsPage() {
 
       {/* Filter Tabs */}
       <AsyncBoundary loadingFallback={<FilterTabsSkeleton />}>
-        <PermissionFilterTabs />
+        <MyFilterTabs />
       </AsyncBoundary>
 
       {/* Table */}
