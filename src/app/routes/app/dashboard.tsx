@@ -11,8 +11,4 @@ function DashboardPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '대시보드',
-}
-
 export default DashboardPage

@@ -7,8 +7,4 @@ function AdminAuditPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '감사 로그',
-}
-
 export default AdminAuditPage

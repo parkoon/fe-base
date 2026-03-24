@@ -7,8 +7,4 @@ function QueryHistoryPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '실행 이력',
-}
-
 export default QueryHistoryPage

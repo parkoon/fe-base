@@ -7,12 +7,48 @@ export type ApprovalStatus =
   | 'FINAL_APPROVED'
   | 'REJECTED'
 
+export type ApprovalStatusLabel = {
+  label: string
+  variant: 'default' | 'secondary' | 'destructive' | 'outline'
+  color: string
+}
+
+export const APPROVAL_STATUS_MAP: Record<ApprovalStatus, ApprovalStatusLabel> = {
+  PENDING_FIRST: {
+    label: '1차 대기',
+    variant: 'outline',
+    color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+  },
+  FIRST_APPROVED: {
+    label: '1차 승인',
+    variant: 'secondary',
+    color: 'text-blue-600 bg-blue-50 border-blue-200',
+  },
+  PENDING_SECOND: {
+    label: '2차 대기',
+    variant: 'outline',
+    color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+  },
+  FINAL_APPROVED: {
+    label: '최종 승인',
+    variant: 'default',
+    color: 'text-green-600 bg-green-50 border-green-200',
+  },
+  REJECTED: {
+    label: '반려',
+    variant: 'destructive',
+    color: 'text-red-600 bg-red-50 border-red-200',
+  },
+}
+
 export type PermissionRequest = {
   id: string
+  datasourceId: number
+  datasourceName: string
+  schema: string
   tableName: string
   tableComment: string
   reason: string
-  columns: string[]
   startDate: string
   endDate: string
   status: ApprovalStatus
@@ -20,8 +56,18 @@ export type PermissionRequest = {
   updatedAt: string
 }
 
+export type PermissionRequestForm = {
+  datasourceId: number
+  schema: string
+  tables: { tableName: string; tableComment: string }[]
+  reason: string
+  startDate: string
+  endDate: string
+}
+
 export type ApprovalStep = {
   step: number
+  stepLabel: string
   approverName: string
   approverDepartment: string
   status: 'PENDING' | 'APPROVED' | 'REJECTED'
@@ -32,5 +78,6 @@ export type ApprovalStep = {
 export type PermissionRequestDetail = PermissionRequest & {
   requesterName: string
   requesterDepartment: string
+  requesterEmployeeId: string
   approvalSteps: ApprovalStep[]
 }

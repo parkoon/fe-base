@@ -7,8 +7,4 @@ function QueryEditorPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: 'SQL 에디터',
-}
-
 export default QueryEditorPage

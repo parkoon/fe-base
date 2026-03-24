@@ -11,8 +11,4 @@ function ApprovalDetailPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '결재 상세',
-}
-
 export default ApprovalDetailPage

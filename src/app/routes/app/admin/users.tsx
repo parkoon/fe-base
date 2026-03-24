@@ -7,8 +7,4 @@ function AdminUsersPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '사용자 관리',
-}
-
 export default AdminUsersPage

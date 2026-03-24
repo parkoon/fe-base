@@ -7,8 +7,4 @@ function AdminPermissionsPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '권한 현황',
-}
-
 export default AdminPermissionsPage

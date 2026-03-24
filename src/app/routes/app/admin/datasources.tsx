@@ -7,8 +7,4 @@ function AdminDataSourcesPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: 'DataSource 관리',
-}
-
 export default AdminDataSourcesPage

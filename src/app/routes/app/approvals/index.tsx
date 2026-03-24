@@ -7,8 +7,4 @@ function ApprovalsPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '결재 대기함',
-}
-
 export default ApprovalsPage

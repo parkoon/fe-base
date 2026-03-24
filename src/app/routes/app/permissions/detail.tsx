@@ -11,8 +11,4 @@ function PermissionDetailPage() {
   )
 }
 
-export const handle = {
-  breadcrumb: '신청 상세',
-}
-
 export default PermissionDetailPage
