@@ -10,7 +10,7 @@ const STEPS = [
   { id: 3, label: '신청 정보', icon: SendIcon },
 ] as const
 
-export function RequestStepIndicator() {
+export function RequestPermissionStepIndicator() {
   const { state } = usePermissionRequest()
 
   return (

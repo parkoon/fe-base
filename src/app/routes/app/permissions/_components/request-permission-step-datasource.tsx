@@ -3,9 +3,9 @@ import { DatabaseIcon } from 'lucide-react'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { usePermissionRequest } from '../_context/request-context'
-import { RequestDatasourcePicker } from './request-datasource-picker'
+import { RequestPermissionDatasourcePicker } from './request-permission-datasource-picker'
 
-export function RequestStepDatasource() {
+export function RequestPermissionStepDatasource() {
   const { state, actions } = usePermissionRequest()
 
   return (
@@ -15,7 +15,7 @@ export function RequestStepDatasource() {
         <CardDescription>접근할 데이터베이스와 스키마를 선택하세요.</CardDescription>
       </CardHeader>
       <CardContent>
-        <RequestDatasourcePicker
+        <RequestPermissionDatasourcePicker
           datasourceId={state.datasourceId}
           schema={state.schema}
           onDatasourceChange={actions.changeDatasource}

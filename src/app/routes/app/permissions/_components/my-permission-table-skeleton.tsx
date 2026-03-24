@@ -18,7 +18,7 @@ const COLUMN_WIDTHS = [
   'w-[50px] pr-4',
 ]
 
-export function PermissionTableSkeleton({ rows = 5 }: { rows?: number }) {
+export function MyPermissionTableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="ring-foreground/5 rounded-xl border ring-1">
       <Table>

@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { usePermissionRequest } from '../_context/request-context'
-import { RequestTablePicker } from './request-table-picker'
+import { RequestPermissionTablePicker } from './request-permission-table-picker'
 
-export function RequestStepTables() {
+export function RequestPermissionStepTables() {
   const { state, actions } = usePermissionRequest()
 
   return (
@@ -35,7 +35,7 @@ export function RequestStepTables() {
             </div>
           }
         >
-          <RequestTablePicker
+          <RequestPermissionTablePicker
             datasourceId={state.datasourceId!}
             schema={state.schema!}
             selectedTables={state.selectedTables}

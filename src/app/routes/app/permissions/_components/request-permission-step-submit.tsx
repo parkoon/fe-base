@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { usePermissionRequest } from '../_context/request-context'
 
-export function RequestStepSubmit() {
+export function RequestPermissionStepSubmit() {
   const { state, actions } = usePermissionRequest()
 
   return (

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { ChevronsUpDownIcon, DatabaseIcon, LayersIcon, Loader2Icon } from 'lucide-react'
+import { useState } from 'react'
 
 import { getDatasourceSchemasQueryOptions } from '@/api/datasources/get-datasource-schemas'
 import { getDatasourcesQueryOptions } from '@/api/datasources/get-datasources'
@@ -8,7 +9,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
@@ -23,7 +23,7 @@ type DataSourceSchemaPickerProps = {
   disabled?: boolean
 }
 
-export function DataSourceSchemaPicker({
+export function RequestPermissionDatasourcePicker({
   datasourceId,
   schema,
   onDatasourceChange,
@@ -42,7 +42,6 @@ export function DataSourceSchemaPicker({
       {/* DataSource 선택 */}
       <ComboboxSelect
         icon={<DatabaseIcon className="text-muted-foreground size-4" />}
-        label="DataSource"
         placeholder="DataSource 선택"
         value={selectedDs?.name ?? null}
         loading={dsLoading}
@@ -64,7 +63,6 @@ export function DataSourceSchemaPicker({
       {/* Schema 선택 */}
       <ComboboxSelect
         icon={<LayersIcon className="text-muted-foreground size-4" />}
-        label="Schema"
         placeholder="Schema 선택"
         value={schema}
         loading={schemaLoading}
@@ -88,7 +86,6 @@ type ComboboxItem = {
 
 type ComboboxSelectProps = {
   icon: React.ReactNode
-  label: string
   placeholder: string
   value: string | null
   loading?: boolean
@@ -99,7 +96,6 @@ type ComboboxSelectProps = {
 
 function ComboboxSelect({
   icon,
-  label,
   placeholder,
   value,
   loading,
@@ -107,8 +103,13 @@ function ComboboxSelect({
   items,
   onSelect,
 }: ComboboxSelectProps) {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Popover>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -135,7 +136,6 @@ function ComboboxSelect({
         align="start"
       >
         <Command>
-          <CommandInput placeholder={`${label} 검색...`} />
           <CommandList>
             <CommandEmpty>결과가 없습니다</CommandEmpty>
             <CommandGroup>
@@ -143,7 +143,10 @@ function ComboboxSelect({
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={onSelect}
+                  onSelect={(v) => {
+                    onSelect(v)
+                    setOpen(false)
+                  }}
                   keywords={[item.label, item.description ?? '']}
                 >
                   <div className="flex flex-col">

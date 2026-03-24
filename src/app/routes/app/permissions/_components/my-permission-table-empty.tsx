@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { paths } from '@/config/paths'
 
-export function MyTableEmpty() {
+export function MyPermissionTableEmpty() {
   return (
     <TableRow className="hover:bg-transparent">
       <TableCell

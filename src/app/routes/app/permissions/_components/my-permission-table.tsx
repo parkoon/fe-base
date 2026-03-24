@@ -5,11 +5,11 @@ import { getPermissionsRequestsQueryOptions } from '@/api/permissions/get-permis
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 import { usePermissionFilter } from '../_hooks/use-permission-filter'
-import { MyTableEmpty } from './my-table-empty'
-import { MyTableRow } from './my-table-row'
+import { MyPermissionTableEmpty } from './my-permission-table-empty'
+import { MyPermissionTableRow } from './my-permission-table-row'
 import { matchesFilter } from './types'
 
-export function MyTable() {
+export function MyPermissionTable() {
   const { currentFilter } = usePermissionFilter()
   const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 
@@ -35,10 +35,10 @@ export function MyTable() {
           </TableHeader>
           <TableBody>
             {filteredItems.length === 0 ? (
-              <MyTableEmpty />
+              <MyPermissionTableEmpty />
             ) : (
               filteredItems.map((item) => (
-                <MyTableRow
+                <MyPermissionTableRow
                   key={item.id}
                   item={item}
                 />

@@ -9,7 +9,7 @@ import { usePermissionFilter } from '../_hooks/use-permission-filter'
 import type { StatusFilter } from './types'
 import { matchesFilter, STATUS_FILTERS } from './types'
 
-export function MyFilterTabs() {
+export function MyPermissionFilterTabs() {
   const { currentFilter, setFilter } = usePermissionFilter()
   const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 

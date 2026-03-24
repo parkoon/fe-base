@@ -1,17 +1,17 @@
 import { Card } from '@/components/ui/card'
 
-import { RequestStepActions } from './_components/request-step-actions'
-import { RequestStepDatasource } from './_components/request-step-datasource'
-import { RequestStepIndicator } from './_components/request-step-indicator'
-import { RequestStepSubmit } from './_components/request-step-submit'
-import { RequestStepTables } from './_components/request-step-tables'
+import { RequestPermissionStepActions } from './_components/request-permission-step-actions'
+import { RequestPermissionStepDatasource } from './_components/request-permission-step-datasource'
+import { RequestPermissionStepIndicator } from './_components/request-permission-step-indicator'
+import { RequestPermissionStepSubmit } from './_components/request-permission-step-submit'
+import { RequestPermissionStepTables } from './_components/request-permission-step-tables'
 import { PermissionRequestProvider, usePermissionRequest } from './_context/request-context'
 
 function StepContent() {
   const { state } = usePermissionRequest()
-  if (state.step === 1) return <RequestStepDatasource />
-  if (state.step === 2) return <RequestStepTables />
-  return <RequestStepSubmit />
+  if (state.step === 1) return <RequestPermissionStepDatasource />
+  if (state.step === 2) return <RequestPermissionStepTables />
+  return <RequestPermissionStepSubmit />
 }
 
 function PermissionRequestPage() {
@@ -24,11 +24,11 @@ function PermissionRequestPage() {
             DataSource와 Schema를 선택하고, 접근할 테이블의 권한을 신청합니다.
           </p>
         </div>
-        <RequestStepIndicator />
+        <RequestPermissionStepIndicator />
         <Card>
           <StepContent />
         </Card>
-        <RequestStepActions />
+        <RequestPermissionStepActions />
       </div>
     </PermissionRequestProvider>
   )

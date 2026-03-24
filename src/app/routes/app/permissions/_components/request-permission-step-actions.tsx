@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 import { usePermissionRequest } from '../_context/request-context'
 
-export function RequestStepActions() {
+export function RequestPermissionStepActions() {
   const { state, actions, canProceed, isSubmitting } = usePermissionRequest()
 
   return (

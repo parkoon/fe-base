@@ -11,7 +11,7 @@ type TablePickerProps = {
   onToggleTable: (table: { tableName: string; tableComment: string }) => void
 }
 
-export function RequestTablePicker({
+export function RequestPermissionTablePicker({
   datasourceId,
   schema,
   selectedTables,
