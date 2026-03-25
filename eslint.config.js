@@ -42,6 +42,8 @@ export default defineConfig(
       // ==========================================
       // useEffect 의존성 배열 검사, hooks 규칙 검사
       ...reactHooks.configs.recommended.rules,
+      // React Compiler 미사용 — useReactTable 등 외부 라이브러리의 불필요한 호환성 경고 비활성화
+      'react-hooks/incompatible-library': 'off',
       // HMR(Hot Module Replacement)을 위해 컴포넌트만 export 권장
       // allowConstantExport: 상수 export는 허용 (예: export const loader)
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
