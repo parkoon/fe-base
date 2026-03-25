@@ -15,6 +15,7 @@ import {
 import { ResultTable } from './_components/result-table'
 import { SqlEditor } from './_components/sql-editor'
 import { useQueryExecution } from './_hooks/use-query-execution'
+import { useSavedQueries } from './_hooks/use-saved-queries'
 import { useSchemaMetadata } from './_hooks/use-schema-metadata'
 
 function QueryEditorPage() {
@@ -23,6 +24,7 @@ function QueryEditorPage() {
   const editorRef = useRef<EditorView | null>(null)
   const { result, error, isRunning, execute } = useQueryExecution()
   const schemaMap = useSchemaMetadata()
+  const { handleSave, isSaving } = useSavedQueries()
 
   const handleRun = useCallback(() => {
     const view = editorRef.current
@@ -53,6 +55,8 @@ function QueryEditorPage() {
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           onRun={handleRun}
           isRunning={isRunning}
+          onSave={handleSave}
+          isSaving={isSaving}
         />
 
         {/* Editor + Results: vertical resizable split */}

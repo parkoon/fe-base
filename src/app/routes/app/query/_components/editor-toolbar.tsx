@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import {
+  BookmarkIcon,
   CheckIcon,
   ChevronDownIcon,
   DatabaseIcon,
@@ -7,6 +8,7 @@ import {
   PanelLeftIcon,
   PlayIcon,
 } from 'lucide-react'
+import { useState } from 'react'
 
 import { getDatasourceSchemasQueryOptions } from '@/api/datasources/get-datasource-schemas'
 import { getDatasourcesQueryOptions } from '@/api/datasources/get-datasources'
@@ -19,17 +21,25 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { LIMIT_OPTIONS, useQueryStore } from '@/stores/query-store'
 
+import { SaveQueryDialog } from './save-query-dialog'
+
 export function EditorToolbar({
   sidebarOpen,
   onToggleSidebar,
   onRun,
   isRunning,
+  onSave,
+  isSaving,
 }: {
   sidebarOpen: boolean
   onToggleSidebar: () => void
   onRun: () => void
   isRunning: boolean
+  onSave: (name: string, memo?: string) => void
+  isSaving: boolean
 }) {
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogKey, setDialogKey] = useState(0)
   const {
     selectedDataSourceId,
     selectedSchema,
@@ -157,6 +167,19 @@ export function EditorToolbar({
         </DropdownMenu>
 
         <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => {
+            setDialogKey((k) => k + 1)
+            setDialogOpen(true)
+          }}
+        >
+          <BookmarkIcon className="size-3.5" />
+          저장
+        </Button>
+
+        <Button
           size="sm"
           className="gap-1.5 px-4 font-medium"
           onClick={onRun}
@@ -169,6 +192,17 @@ export function EditorToolbar({
           </kbd>
         </Button>
       </div>
+
+      <SaveQueryDialog
+        key={dialogKey}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSave={(name, memo) => {
+          onSave(name, memo)
+          setDialogOpen(false)
+        }}
+        isSaving={isSaving}
+      />
     </div>
   )
 }
