@@ -10,7 +10,9 @@ type GetQueryHistoryParams = {
   dataSourceId?: number
 }
 
-export const getQueryHistoryService = (params: GetQueryHistoryParams) =>
+export const getQueryHistoryService = (
+  params: GetQueryHistoryParams
+): Promise<QueryHistoryListResponse> =>
   querypie.instance
     .get<QueryHistoryListResponse>('/api/queries/history', { params })
     .then((res) => res.data)

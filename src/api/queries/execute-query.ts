@@ -2,5 +2,5 @@ import type { ExecuteQueryRequest, ExecuteQueryResponse } from '@/types/manual/q
 
 import { querypie } from '../querypie'
 
-export const executeQueryService = (body: ExecuteQueryRequest) =>
+export const executeQueryService = (body: ExecuteQueryRequest): Promise<ExecuteQueryResponse> =>
   querypie.instance.post<ExecuteQueryResponse>('/api/queries/execute', body).then((res) => res.data)

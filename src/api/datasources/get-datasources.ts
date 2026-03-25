@@ -4,7 +4,7 @@ import type { DataSource } from '@/types/manual/datasource'
 
 import { querypie } from '../querypie'
 
-export const getDatasourcesService = () =>
+export const getDatasourcesService = (): Promise<DataSource[]> =>
   querypie.instance.get<DataSource[]>('/api/datasources').then((res) => res.data)
 
 export const getDatasourcesQueryOptions = () =>
