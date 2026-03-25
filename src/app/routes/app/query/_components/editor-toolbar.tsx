@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -7,6 +8,8 @@ import {
   PlayIcon,
 } from 'lucide-react'
 
+import { getDatasourceSchemasQueryOptions } from '@/api/datasources/get-datasource-schemas'
+import { getDatasourcesQueryOptions } from '@/api/datasources/get-datasources'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -14,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LIMIT_OPTIONS, MOCK_DATA_SOURCES, useQueryStore } from '@/stores/query-store'
+import { LIMIT_OPTIONS, useQueryStore } from '@/stores/query-store'
 
 export function EditorToolbar({
   sidebarOpen,
@@ -36,7 +39,12 @@ export function EditorToolbar({
     setLimitRows,
   } = useQueryStore()
 
-  const selectedDs = MOCK_DATA_SOURCES.find((ds) => ds.id === selectedDataSourceId)
+  const { data: datasources = [] } = useQuery(getDatasourcesQueryOptions())
+  const { data: schemas = [] } = useQuery(
+    getDatasourceSchemasQueryOptions(selectedDataSourceId ?? 0)
+  )
+
+  const selectedDs = datasources.find((ds) => ds.id === selectedDataSourceId)
 
   return (
     <div className="flex h-11 shrink-0 items-center justify-between border-b px-3">
@@ -70,13 +78,17 @@ export function EditorToolbar({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {MOCK_DATA_SOURCES.map((ds) => (
+            {datasources.map((ds) => (
               <DropdownMenuItem
                 key={ds.id}
                 onClick={() => setDataSource(ds.id)}
+                disabled={ds.status === 'INACTIVE'}
               >
                 <DatabaseIcon className="text-muted-foreground size-3.5" />
                 <span className="flex-1">{ds.name}</span>
+                {ds.status === 'INACTIVE' && (
+                  <span className="text-muted-foreground text-[10px]">비활성</span>
+                )}
                 {ds.id === selectedDataSourceId && <CheckIcon className="size-3.5" />}
               </DropdownMenuItem>
             ))}
@@ -102,14 +114,15 @@ export function EditorToolbar({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {selectedDs?.schemas.map((schema) => (
+            {schemas.map((schema) => (
               <DropdownMenuItem
-                key={schema}
-                onClick={() => setSchema(schema)}
+                key={schema.name}
+                onClick={() => setSchema(schema.name)}
               >
                 <LayersIcon className="text-muted-foreground size-3.5" />
-                <span className="flex-1">{schema}</span>
-                {schema === selectedSchema && <CheckIcon className="size-3.5" />}
+                <span className="flex-1">{schema.name}</span>
+                <span className="text-muted-foreground text-[10px]">{schema.tableCount}개</span>
+                {schema.name === selectedSchema && <CheckIcon className="size-3.5" />}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

@@ -1,19 +1,23 @@
 import { sql } from '@codemirror/lang-sql'
-import { EditorState } from '@codemirror/state'
+import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
+
+const sqlCompartment = new Compartment()
 
 export function SqlEditor({
   value,
   onChange,
   onRun,
   onEditorMount,
+  schema,
 }: {
   value: string
   onChange: (value: string) => void
   onRun?: () => void
   onEditorMount?: (view: EditorView) => void
+  schema?: Record<string, string[]>
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -46,7 +50,7 @@ export function SqlEditor({
       doc: value,
       extensions: [
         basicSetup,
-        sql(),
+        sqlCompartment.of(sql({ schema })),
         runQueryKeymap,
         updateListener,
         EditorView.theme({
@@ -72,6 +76,16 @@ export function SqlEditor({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // schema 변경 시 sql extension 동적 교체
+  useEffect(() => {
+    const view = viewRef.current
+    if (!view) return
+
+    view.dispatch({
+      effects: sqlCompartment.reconfigure(sql({ schema })),
+    })
+  }, [schema])
 
   // 외부 value 변경 시 에디터 동기화
   useEffect(() => {

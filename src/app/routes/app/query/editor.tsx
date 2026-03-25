@@ -6,15 +6,23 @@ import { useQueryStore } from '@/stores/query-store'
 
 import { EditorToolbar } from './_components/editor-toolbar'
 import { QuerySidebar } from './_components/query-sidebar'
+import {
+  ResultEmpty,
+  ResultError,
+  ResultInitial,
+  ResultLoading,
+} from './_components/result-empty-states'
 import { ResultTable } from './_components/result-table'
 import { SqlEditor } from './_components/sql-editor'
 import { useQueryExecution } from './_hooks/use-query-execution'
+import { useSchemaMetadata } from './_hooks/use-schema-metadata'
 
 function QueryEditorPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const { sqlValue, setSqlValue, limitRows } = useQueryStore()
   const editorRef = useRef<EditorView | null>(null)
   const { result, error, isRunning, execute } = useQueryExecution()
+  const schemaMap = useSchemaMetadata()
 
   const handleRun = useCallback(() => {
     const view = editorRef.current
@@ -64,6 +72,7 @@ function QueryEditorPage() {
               onEditorMount={(view) => {
                 editorRef.current = view
               }}
+              schema={schemaMap}
             />
           </ResizablePanel>
 
@@ -93,29 +102,20 @@ function QueryEditorPage() {
 
               {/* Results content */}
               {isRunning ? (
-                <div className="flex flex-1 items-center justify-center border-t">
-                  <div className="text-muted-foreground text-center">
-                    <p className="text-sm font-medium">실행 중...</p>
-                  </div>
-                </div>
+                <ResultLoading />
               ) : error ? (
-                <div className="flex flex-1 items-center justify-center border-t">
-                  <div className="text-center text-red-500">
-                    <p className="text-sm font-medium">오류 발생</p>
-                    <p className="mt-1 text-xs">{error}</p>
-                  </div>
-                </div>
-              ) : result ? (
+                <ResultError
+                  message={error}
+                  onRetry={handleRun}
+                />
+              ) : result && result.rowCount > 0 ? (
                 <div className="flex-1 overflow-auto border-t">
                   <ResultTable result={result} />
                 </div>
+              ) : result ? (
+                <ResultEmpty executionTimeMs={result.executionTimeMs} />
               ) : (
-                <div className="flex flex-1 items-center justify-center border-t">
-                  <div className="text-muted-foreground text-center">
-                    <p className="text-sm font-medium">Result Table</p>
-                    <p className="mt-1 text-xs">쿼리를 실행하면 결과가 여기에 표시됩니다</p>
-                  </div>
-                </div>
+                <ResultInitial />
               )}
 
               {/* Status bar */}
