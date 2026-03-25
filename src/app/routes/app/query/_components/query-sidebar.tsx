@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useDeleteQueryMutation } from '@/api/queries/delete-query'
@@ -10,15 +10,15 @@ import { QueryList } from './query-list'
 
 export function QuerySidebar() {
   const { loadedQueryId, setLoadedQuery, clearLoadedQuery } = useQueryStore()
-  const { data: queries = [], isLoading } = useQuery(getQueriesQueryOptions())
-  const { mutate: deleteQuery } = useDeleteQueryMutation()
+  const queriesQuery = useSuspenseQuery(getQueriesQueryOptions())
+  const deleteQueryMutation = useDeleteQueryMutation()
 
   const handleLoad = (query: SavedQuery) => {
     setLoadedQuery(query.id, query.sql)
   }
 
   const handleDelete = (query: SavedQuery) => {
-    deleteQuery(query.id, {
+    deleteQueryMutation.mutate(query.id, {
       onSuccess: () => {
         if (loadedQueryId === query.id) {
           clearLoadedQuery()
@@ -37,16 +37,12 @@ export function QuerySidebar() {
 
       {/* Query list */}
       <div className="flex-1 overflow-y-auto p-2">
-        {isLoading ? (
-          <p className="text-muted-foreground px-3 py-4 text-center text-xs">불러오는 중...</p>
-        ) : (
-          <QueryList
-            queries={queries}
-            loadedQueryId={loadedQueryId}
-            onLoad={handleLoad}
-            onDelete={handleDelete}
-          />
-        )}
+        <QueryList
+          queries={queriesQuery.data}
+          loadedQueryId={loadedQueryId}
+          onLoad={handleLoad}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   )

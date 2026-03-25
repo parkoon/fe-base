@@ -78,12 +78,12 @@ export function QueryHistoryTable() {
     ? Number(searchParams.get('dataSourceId'))
     : undefined
 
-  const { data } = useSuspenseQuery(
+  const queryHistoryQuery = useSuspenseQuery(
     getQueryHistoryQueryOptions({ page, size: PAGE_SIZE, dataSourceId })
   )
 
-  const items = data.items
-  const total = data.total
+  const items = queryHistoryQuery.data.items
+  const total = queryHistoryQuery.data.total
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   const setPage = (p: number) => {

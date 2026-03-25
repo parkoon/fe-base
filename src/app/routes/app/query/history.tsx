@@ -19,7 +19,9 @@ function QueryHistoryPage() {
         <p className="text-muted-foreground mt-1">SQL 실행 이력을 조회합니다.</p>
       </div>
 
-      <DatasourceSelector />
+      <AsyncBoundary>
+        <DatasourceSelector />
+      </AsyncBoundary>
 
       <AsyncBoundary loadingFallback={<HistoryTableSkeleton />}>
         <QueryHistoryTable />

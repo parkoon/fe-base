@@ -66,6 +66,8 @@ export const clientLoader = (queryClient: QueryClient) => async () => {
 
 ## Code Conventions
 
+> React Query 훅 명명, 쿼리 추상화, AsyncBoundary 패턴 등 상세 규칙은 [CODING_STYLE.md](./CODING_STYLE.md) 참고.
+
 **ESLint 강제 규칙:**
 
 - `type` 사용 (interface 금지): `@typescript-eslint/consistent-type-definitions`

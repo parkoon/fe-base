@@ -11,7 +11,7 @@ import { matchesFilter, STATUS_FILTERS } from './types'
 
 export function MyPermissionFilterTabs() {
   const { currentFilter, setFilter } = usePermissionFilter()
-  const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
+  const permissionsRequestsQuery = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 
   const filterCounts = useMemo(
     () =>
@@ -19,11 +19,12 @@ export function MyPermissionFilterTabs() {
         STATUS_FILTERS.map(({ value: v }) => [
           v,
           v === 'ALL'
-            ? data.items.length
-            : data.items.filter((item) => matchesFilter(item.status, v)).length,
+            ? permissionsRequestsQuery.data.items.length
+            : permissionsRequestsQuery.data.items.filter((item) => matchesFilter(item.status, v))
+                .length,
         ])
       ) as Record<StatusFilter, number>,
-    [data.items]
+    [permissionsRequestsQuery.data.items]
   )
 
   return (

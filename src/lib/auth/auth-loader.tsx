@@ -27,7 +27,7 @@ export function AuthLoader({ children, renderLoading }: AuthLoaderProps) {
   const hasSynced = useRef(false)
 
   // 토큰이 있을 때만 /auth/me 호출
-  const { data, isLoading } = useQuery({
+  const authMeQuery = useQuery({
     ...getAuthMeQueryOptions(),
     enabled: !!user?.accessToken,
     retry: false, // 인터셉터가 refresh 처리하므로 retry 불필요
@@ -35,17 +35,17 @@ export function AuthLoader({ children, renderLoading }: AuthLoaderProps) {
 
   // /auth/me 성공 시 user 정보 업데이트 (한 번만)
   useEffect(() => {
-    if (data && !hasSynced.current) {
+    if (authMeQuery.data && !hasSynced.current) {
       const currentUser = useAuthStore.getState().user
       if (currentUser) {
         hasSynced.current = true
-        setUser({ ...currentUser, ...data })
+        setUser({ ...currentUser, ...authMeQuery.data })
       }
     }
-  }, [data, setUser])
+  }, [authMeQuery.data, setUser])
 
   // 토큰이 있고 검증 중일 때 로딩 표시
-  if (user?.accessToken && isLoading) {
+  if (user?.accessToken && authMeQuery.isLoading) {
     return <>{renderLoading()}</>
   }
 

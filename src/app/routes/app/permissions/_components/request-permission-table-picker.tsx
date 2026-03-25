@@ -17,17 +17,17 @@ export function RequestPermissionTablePicker({
   selectedTables,
   onToggleTable,
 }: TablePickerProps) {
-  const { data: tables } = useSuspenseQuery(getDatasourceTablesQueryOptions(datasourceId, schema))
+  const tablesQuery = useSuspenseQuery(getDatasourceTablesQueryOptions(datasourceId, schema))
 
   const isSelected = (tableName: string) => selectedTables.some((t) => t.tableName === tableName)
 
   return (
     <div className="rounded-lg border">
       <ul className="max-h-[240px] overflow-y-auto">
-        {tables.length === 0 ? (
+        {tablesQuery.data.length === 0 ? (
           <li className="text-muted-foreground py-6 text-center text-sm">테이블이 없습니다</li>
         ) : (
-          tables.map((table) => {
+          tablesQuery.data.map((table) => {
             const selected = isSelected(table.tableName)
             return (
               <li key={table.tableName}>

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import {
   BookmarkIcon,
   CheckIcon,
@@ -49,12 +49,10 @@ export function EditorToolbar({
     setLimitRows,
   } = useQueryStore()
 
-  const { data: datasources = [] } = useQuery(getDatasourcesQueryOptions())
-  const { data: schemas = [] } = useQuery(
-    getDatasourceSchemasQueryOptions(selectedDataSourceId ?? 0)
-  )
+  const datasourcesQuery = useSuspenseQuery(getDatasourcesQueryOptions())
+  const schemasQuery = useQuery(getDatasourceSchemasQueryOptions(selectedDataSourceId ?? 0))
 
-  const selectedDs = datasources.find((ds) => ds.id === selectedDataSourceId)
+  const selectedDs = datasourcesQuery.data.find((ds) => ds.id === selectedDataSourceId)
 
   return (
     <div className="flex h-11 shrink-0 items-center justify-between border-b px-3">
@@ -88,7 +86,7 @@ export function EditorToolbar({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {datasources.map((ds) => (
+            {datasourcesQuery.data.map((ds) => (
               <DropdownMenuItem
                 key={ds.id}
                 onClick={() => setDataSource(ds.id)}
@@ -124,7 +122,7 @@ export function EditorToolbar({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {schemas.map((schema) => (
+            {(schemasQuery.data ?? []).map((schema) => (
               <DropdownMenuItem
                 key={schema.name}
                 onClick={() => setSchema(schema.name)}

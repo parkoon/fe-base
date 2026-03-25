@@ -1,5 +1,6 @@
 import { DatabaseIcon } from 'lucide-react'
 
+import { AsyncBoundary } from '@/components/errors'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { usePermissionRequest } from '../_context/request-context'
@@ -15,12 +16,14 @@ export function RequestPermissionStepDatasource() {
         <CardDescription>접근할 데이터베이스와 스키마를 선택하세요.</CardDescription>
       </CardHeader>
       <CardContent>
-        <RequestPermissionDatasourcePicker
-          datasourceId={state.datasourceId}
-          schema={state.schema}
-          onDatasourceChange={actions.changeDatasource}
-          onSchemaChange={actions.changeSchema}
-        />
+        <AsyncBoundary>
+          <RequestPermissionDatasourcePicker
+            datasourceId={state.datasourceId}
+            schema={state.schema}
+            onDatasourceChange={actions.changeDatasource}
+            onSchemaChange={actions.changeSchema}
+          />
+        </AsyncBoundary>
         {state.datasourceId && state.schema && (
           <div className="bg-muted/50 mt-4 flex items-center gap-2 rounded-lg px-3 py-2">
             <DatabaseIcon className="text-primary-500 size-4" />

@@ -1,8 +1,12 @@
 import type { EditorView } from '@codemirror/view'
-import { useCallback, useRef, useState } from 'react'
+import { useQueries, useQuery } from '@tanstack/react-query'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { getDatasourceColumnsQueryOptions } from '@/api/datasources/get-datasource-columns'
+import { getDatasourceTablesQueryOptions } from '@/api/datasources/get-datasource-tables'
 import { useCreateQueryMutation } from '@/api/queries/create-query'
+import { AsyncBoundary } from '@/components/errors'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useQueryStore } from '@/stores/query-store'
 
@@ -17,18 +21,37 @@ import {
 import { ResultTable } from './_components/result-table'
 import { SqlEditor } from './_components/sql-editor'
 import { useQueryExecution } from './_hooks/use-query-execution'
-import { useSchemaMetadata } from './_hooks/use-schema-metadata'
 
 function QueryEditorPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { sqlValue, setSqlValue, limitRows } = useQueryStore()
+  const { sqlValue, setSqlValue, limitRows, selectedDataSourceId, selectedSchema } = useQueryStore()
   const editorRef = useRef<EditorView | null>(null)
   const { result, error, isRunning, execute } = useQueryExecution()
-  const schemaMap = useSchemaMetadata()
-  const { mutate: saveQuery, isPending: isSaving } = useCreateQueryMutation()
+  const createQueryMutation = useCreateQueryMutation()
+
+  const dsId = selectedDataSourceId ?? 0
+  const schema = selectedSchema ?? ''
+  const tablesQuery = useQuery(getDatasourceTablesQueryOptions(dsId, schema))
+  const permittedTables = useMemo(
+    () => (tablesQuery.data ?? []).filter((t) => t.hasPermission),
+    [tablesQuery.data]
+  )
+  const columnQueries = useQueries({
+    queries: permittedTables.map((t) =>
+      getDatasourceColumnsQueryOptions(dsId, schema, t.tableName)
+    ),
+  })
+  const schemaMap = useMemo(() => {
+    const map: Record<string, string[]> = {}
+    permittedTables.forEach((table, i) => {
+      const columns = columnQueries[i]?.data
+      map[table.tableName] = columns ? columns.map((c) => c.name) : []
+    })
+    return map
+  }, [permittedTables, columnQueries])
 
   const handleSave = (name: string, memo?: string, onSuccess?: () => void) => {
-    saveQuery(
+    createQueryMutation.mutate(
       { name, sql: sqlValue, memo },
       {
         onSuccess: (saved) => {
@@ -56,21 +79,25 @@ function QueryEditorPage() {
       {/* Query history sidebar */}
       {sidebarOpen && (
         <div className="w-64 shrink-0">
-          <QuerySidebar />
+          <AsyncBoundary loadingFallback={<div className="h-full border-r" />}>
+            <QuerySidebar />
+          </AsyncBoundary>
         </div>
       )}
 
       {/* Main editor area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Toolbar */}
-        <EditorToolbar
-          sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
-          onRun={handleRun}
-          isRunning={isRunning}
-          onSave={handleSave}
-          isSaving={isSaving}
-        />
+        <AsyncBoundary loadingFallback={<div className="h-11 shrink-0 border-b" />}>
+          <EditorToolbar
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+            onRun={handleRun}
+            isRunning={isRunning}
+            onSave={handleSave}
+            isSaving={createQueryMutation.isPending}
+          />
+        </AsyncBoundary>
 
         {/* Editor + Results: vertical resizable split */}
         <ResizablePanelGroup

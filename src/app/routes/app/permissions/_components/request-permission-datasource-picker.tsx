@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { ChevronsUpDownIcon, DatabaseIcon, LayersIcon, Loader2Icon } from 'lucide-react'
 import { useState } from 'react'
 
@@ -30,12 +30,10 @@ export function RequestPermissionDatasourcePicker({
   onSchemaChange,
   disabled,
 }: DataSourceSchemaPickerProps) {
-  const { data: datasources, isLoading: dsLoading } = useQuery(getDatasourcesQueryOptions())
-  const { data: schemas, isLoading: schemaLoading } = useQuery(
-    getDatasourceSchemasQueryOptions(datasourceId ?? 0)
-  )
+  const datasourcesQuery = useSuspenseQuery(getDatasourcesQueryOptions())
+  const schemasQuery = useQuery(getDatasourceSchemasQueryOptions(datasourceId ?? 0))
 
-  const selectedDs = datasources?.find((ds) => ds.id === datasourceId)
+  const selectedDs = datasourcesQuery.data.find((ds) => ds.id === datasourceId)
 
   return (
     <div className="flex items-center gap-3">
@@ -44,15 +42,14 @@ export function RequestPermissionDatasourcePicker({
         icon={<DatabaseIcon className="text-muted-foreground size-4" />}
         placeholder="DataSource 선택"
         value={selectedDs?.name ?? null}
-        loading={dsLoading}
         disabled={disabled}
-        items={(datasources ?? []).map((ds) => ({
+        items={datasourcesQuery.data.map((ds) => ({
           value: String(ds.id),
           label: ds.name,
           description: `${ds.host}:${ds.port} (${ds.driver})`,
         }))}
         onSelect={(value) => {
-          const ds = datasources?.find((d) => String(d.id) === value)
+          const ds = datasourcesQuery.data.find((d) => String(d.id) === value)
           if (ds) {
             onDatasourceChange(ds.id, ds.name)
             onSchemaChange('')
@@ -65,9 +62,9 @@ export function RequestPermissionDatasourcePicker({
         icon={<LayersIcon className="text-muted-foreground size-4" />}
         placeholder="Schema 선택"
         value={schema}
-        loading={schemaLoading}
+        loading={schemasQuery.isLoading}
         disabled={disabled ?? !datasourceId}
-        items={(schemas ?? []).map((s) => ({
+        items={(schemasQuery.data ?? []).map((s) => ({
           value: s.name,
           label: s.name,
           description: `${s.tableCount}개 테이블`,

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
 
 import { getDatasourcesQueryOptions } from '@/api/datasources/get-datasources'
@@ -14,7 +14,7 @@ export function DatasourceSelector() {
   const [searchParams, setSearchParams] = useSearchParams()
   const dataSourceId = searchParams.get('dataSourceId') ?? 'all'
 
-  const { data: datasources = [] } = useQuery(getDatasourcesQueryOptions())
+  const datasourcesQuery = useSuspenseQuery(getDatasourcesQueryOptions())
 
   const handleChange = (value: string) => {
     setSearchParams((prev) => {
@@ -36,7 +36,7 @@ export function DatasourceSelector() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">DataSource 전체</SelectItem>
-        {datasources.map((ds) => (
+        {datasourcesQuery.data.map((ds) => (
           <SelectItem
             key={ds.id}
             value={String(ds.id)}

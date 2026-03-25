@@ -11,11 +11,14 @@ import { matchesFilter } from './types'
 
 export function MyPermissionTable() {
   const { currentFilter } = usePermissionFilter()
-  const { data } = useSuspenseQuery(getPermissionsRequestsQueryOptions())
+  const permissionsRequestsQuery = useSuspenseQuery(getPermissionsRequestsQueryOptions())
 
   const filteredItems = useMemo(
-    () => data.items.filter((item) => matchesFilter(item.status, currentFilter)),
-    [data.items, currentFilter]
+    () =>
+      permissionsRequestsQuery.data.items.filter((item) =>
+        matchesFilter(item.status, currentFilter)
+      ),
+    [permissionsRequestsQuery.data.items, currentFilter]
   )
 
   return (
