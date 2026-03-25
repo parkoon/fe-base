@@ -1,6 +1,8 @@
 import type { EditorView } from '@codemirror/view'
 import { useCallback, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
+import { useCreateQueryMutation } from '@/api/queries/create-query'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useQueryStore } from '@/stores/query-store'
 
@@ -15,7 +17,6 @@ import {
 import { ResultTable } from './_components/result-table'
 import { SqlEditor } from './_components/sql-editor'
 import { useQueryExecution } from './_hooks/use-query-execution'
-import { useSavedQueries } from './_hooks/use-saved-queries'
 import { useSchemaMetadata } from './_hooks/use-schema-metadata'
 
 function QueryEditorPage() {
@@ -24,7 +25,19 @@ function QueryEditorPage() {
   const editorRef = useRef<EditorView | null>(null)
   const { result, error, isRunning, execute } = useQueryExecution()
   const schemaMap = useSchemaMetadata()
-  const { handleSave, isSaving } = useSavedQueries()
+  const { mutate: saveQuery, isPending: isSaving } = useCreateQueryMutation()
+
+  const handleSave = (name: string, memo?: string, onSuccess?: () => void) => {
+    saveQuery(
+      { name, sql: sqlValue, memo },
+      {
+        onSuccess: (saved) => {
+          toast(`"${saved.name}" 쿼리가 저장되었습니다.`)
+          onSuccess?.()
+        },
+      }
+    )
+  }
 
   const handleRun = useCallback(() => {
     const view = editorRef.current
