@@ -17,9 +17,37 @@ export type QueryColumn = {
 export type QueryHistoryItem = {
   id: string
   sql: string
+  dataSourceId: number
+  dataSourceName: string
+  schema: string
   rowCount: number
   executionTimeMs: number
+  status: 'success' | 'error'
+  errorMessage?: string
   executedAt: string
+}
+
+export type QueryHistoryListResponse = {
+  items: QueryHistoryItem[]
+  total: number
+  page: number
+  size: number
+}
+
+export type ExecuteQueryRequest = {
+  sql: string
+  dataSourceId: number
+  schema: string
+  limitRows: number
+}
+
+export type ExecuteQueryResponse = {
+  historyId: string
+  columns: string[]
+  rows: Record<string, unknown>[]
+  rowCount: number
+  executionTimeMs: number
+  truncated: boolean
 }
 
 export type TableMetadata = {
