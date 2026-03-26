@@ -1,47 +1,41 @@
-import { PanelLeftIcon } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
+import { useCreateQueryMutation } from '@/api/queries/create-query'
 import { Button } from '@/components/ui/button'
+import { useSQLEditorValue } from '@/lib/sql-editor'
 
 import { DataSourceSelect } from './datasource-select'
 import { LimitSelect } from './limit-select'
 import { SaveQueryDialog } from './save-query-dialog'
 import { SchemaSelect } from './schema-select'
 
-export function EditorToolbar({
-  sidebarOpen,
-  onToggleSidebar,
-  onRun,
-  isRunning,
-  onSave,
-  isSaving,
-}: {
-  sidebarOpen: boolean
-  onToggleSidebar: () => void
+type EditorToolbarProps = {
   onRun: () => void
   isRunning: boolean
-  onSave: (name: string, memo?: string) => void
-  isSaving: boolean
-}) {
+}
+export function EditorToolbar({ onRun, isRunning }: EditorToolbarProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogKey, setDialogKey] = useState(0)
+  const { SQL } = useSQLEditorValue()
+
+  const createQueryMutation = useCreateQueryMutation()
+
+  const handleSave = (name: string, memo?: string, onSuccess?: () => void) => {
+    createQueryMutation.mutate(
+      { name, sql: SQL, memo },
+      {
+        onSuccess: (saved) => {
+          toast(`"${saved.name}" 쿼리가 저장되었습니다.`)
+          onSuccess?.()
+        },
+      }
+    )
+  }
 
   return (
     <div className="flex h-11 shrink-0 items-center justify-between border-b px-3">
-      {/* Left: Sidebar toggle + DataSource / Schema selectors */}
+      {/* Left: DataSource / Schema selectors */}
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={onToggleSidebar}
-        >
-          <PanelLeftIcon
-            className={`size-4 ${sidebarOpen ? 'text-foreground' : 'text-muted-foreground'}`}
-          />
-        </Button>
-        <div className="bg-border mx-1 h-4 w-px" />
-
         <DataSourceSelect />
 
         <span className="text-muted-foreground/40 text-xs">/</span>
@@ -56,7 +50,6 @@ export function EditorToolbar({
         <Button
           variant="outline"
           onClick={() => {
-            setDialogKey((k) => k + 1)
             setDialogOpen(true)
           }}
         >
@@ -74,14 +67,13 @@ export function EditorToolbar({
       </div>
 
       <SaveQueryDialog
-        key={dialogKey}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSave={(name, memo) => {
-          onSave(name, memo)
+          handleSave(name, memo)
           setDialogOpen(false)
         }}
-        isSaving={isSaving}
+        isSaving={createQueryMutation.isPending}
       />
     </div>
   )

@@ -1,15 +1,10 @@
-import type { EditorView } from '@codemirror/view'
-import { useQueries, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
-import { getDatasourceColumnsQueryOptions } from '@/api/datasources/get-datasource-columns'
-import { getDatasourceTablesQueryOptions } from '@/api/datasources/get-datasource-tables'
-import { useCreateQueryMutation } from '@/api/queries/create-query'
 import { getQueriesQueryOptions } from '@/api/queries/get-queries'
 import { AsyncBoundary } from '@/components/errors'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { useEditorConfigStore } from '@/stores/editor-config-store'
+import { SQLEditor, useSQLEditorAction, useSQLEditorValue } from '@/lib/sql-editor'
 import { useQueryTableStore } from '@/stores/query-table-store'
 import { useSelectedQueryStore } from '@/stores/selected-query-store'
 
@@ -22,99 +17,68 @@ import {
   ResultLoading,
 } from './_components/result-empty-states'
 import { ResultTable } from './_components/result-table'
-import { SqlEditor } from './_components/sql-editor'
 import { useQueryExecution } from './_hooks/use-query-execution'
 
 function QueryEditorPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
+  // const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
   const { limitRows } = useQueryTableStore()
   const { selectedQueryId } = useSelectedQueryStore()
   const { data: queries } = useSuspenseQuery(getQueriesQueryOptions())
 
-  const [editedSql, setEditedSql] = useState<{ forQueryId: number | null; sql: string }>(() => ({
-    forQueryId: selectedQueryId,
-    sql: queries.find((q) => q.id === selectedQueryId)?.sql ?? '',
-  }))
-
-  const sqlValue =
-    editedSql.forQueryId === selectedQueryId
-      ? editedSql.sql
-      : (queries.find((q) => q.id === selectedQueryId)?.sql ?? '')
-
-  const setSqlValue = (sql: string) => setEditedSql({ forQueryId: selectedQueryId, sql })
-
-  const editorRef = useRef<EditorView | null>(null)
+  const { SQL } = useSQLEditorValue()
+  const { setSQL } = useSQLEditorAction()
   const { result, error, isRunning, execute } = useQueryExecution()
-  const createQueryMutation = useCreateQueryMutation()
 
-  const dsId = selectedDataSourceId ?? 0
-  const schema = selectedSchema ?? ''
-  const tablesQuery = useQuery(getDatasourceTablesQueryOptions(dsId, schema))
-  const permittedTables = useMemo(
-    () => (tablesQuery.data ?? []).filter((t) => t.hasPermission),
-    [tablesQuery.data]
-  )
-  const columnQueries = useQueries({
-    queries: permittedTables.map((t) =>
-      getDatasourceColumnsQueryOptions(dsId, schema, t.tableName)
-    ),
-  })
-  const schemaMap = useMemo(() => {
-    const map: Record<string, string[]> = {}
-    permittedTables.forEach((table, i) => {
-      const columns = columnQueries[i]?.data
-      map[table.tableName] = columns ? columns.map((c) => c.name) : []
-    })
-    return map
-  }, [permittedTables, columnQueries])
+  // 선택된 쿼리가 바뀌면 에디터 SQL을 해당 쿼리의 저장된 값으로 초기화
+  useEffect(() => {
+    const querySql = queries.find((q) => q.id === selectedQueryId)?.sql ?? ''
+    setSQL(querySql)
+  }, [selectedQueryId, setSQL, queries])
 
-  const handleSave = (name: string, memo?: string, onSuccess?: () => void) => {
-    createQueryMutation.mutate(
-      { name, sql: sqlValue, memo },
-      {
-        onSuccess: (saved) => {
-          toast(`"${saved.name}" 쿼리가 저장되었습니다.`)
-          onSuccess?.()
-        },
-      }
-    )
+  // const dsId = selectedDataSourceId ?? 0
+  // const schema = selectedSchema ?? ''
+  // const tablesQuery = useQuery(getDatasourceTablesQueryOptions(dsId, schema))
+  // const permittedTables = useMemo(
+  //   () => (tablesQuery.data ?? []).filter((t) => t.hasPermission),
+  //   [tablesQuery.data]
+  // )
+  // const columnQueries = useQueries({
+  //   queries: permittedTables.map((t) =>
+  //     getDatasourceColumnsQueryOptions(dsId, schema, t.tableName)
+  //   ),
+  // })
+  // const schemaMap = useMemo(() => {
+  //   const map: Record<string, string[]> = {}
+  //   permittedTables.forEach((table, i) => {
+  //     const columns = columnQueries[i]?.data
+  //     map[table.tableName] = columns ? columns.map((c) => c.name) : []
+  //   })
+  //   return map
+  // }, [permittedTables, columnQueries])
+
+  // useEffect(() => {
+  //   setSchema(schemaMap)
+  // }, [schemaMap, setSchema])
+
+  const handleRun = () => {
+    void execute(SQL, limitRows)
   }
-
-  const handleRun = useCallback(() => {
-    const view = editorRef.current
-    if (!view) return
-
-    // 선택 영역이 있으면 선택된 텍스트만 실행
-    const { from, to } = view.state.selection.main
-    const selectedText = from !== to ? view.state.sliceDoc(from, to) : null
-    const queryToRun = selectedText?.trim() ? selectedText : sqlValue
-
-    void execute(queryToRun, limitRows)
-  }, [sqlValue, limitRows, execute])
 
   return (
     <div className="-m-4 flex flex-1 overflow-hidden">
-      {/* Query history sidebar */}
-      {sidebarOpen && (
-        <div className="w-64 shrink-0">
-          <AsyncBoundary loadingFallback={<div className="h-full border-r" />}>
-            <QuerySidebar />
-          </AsyncBoundary>
-        </div>
-      )}
+      <div className="w-52 shrink-0">
+        <AsyncBoundary loadingFallback={<div className="h-full border-r" />}>
+          <QuerySidebar />
+        </AsyncBoundary>
+      </div>
 
       {/* Main editor area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Toolbar */}
         <AsyncBoundary loadingFallback={<div className="h-11 shrink-0 border-b" />}>
           <EditorToolbar
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
             onRun={handleRun}
             isRunning={isRunning}
-            onSave={handleSave}
-            isSaving={createQueryMutation.isPending}
           />
         </AsyncBoundary>
 
@@ -128,15 +92,7 @@ function QueryEditorPage() {
             defaultSize={55}
             minSize={20}
           >
-            <SqlEditor
-              value={sqlValue}
-              onChange={setSqlValue}
-              onRun={handleRun}
-              onEditorMount={(view) => {
-                editorRef.current = view
-              }}
-              schema={schemaMap}
-            />
+            <SQLEditor onRun={handleRun} />
           </ResizablePanel>
 
           <ResizableHandle />

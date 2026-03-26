@@ -30,6 +30,8 @@ export function SaveQueryDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
+    setName('')
+    setMemo('')
     onSave(name.trim(), memo.trim() || undefined)
   }
 
