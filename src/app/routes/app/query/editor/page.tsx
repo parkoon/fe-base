@@ -1,64 +1,18 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
-
-import { getQueriesQueryOptions } from '@/api/queries/get-queries'
 import { AsyncBoundary } from '@/components/errors'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { SQLEditor, useSQLEditorAction, useSQLEditorValue } from '@/lib/sql-editor'
+import { SQLEditor, useSQLEditorValue } from '@/lib/sql-editor'
 import { useQueryTableStore } from '@/stores/query-table-store'
-import { useSelectedQueryStore } from '@/stores/selected-query-store'
 
 import { EditorToolbar } from './_components/editor-toolbar'
 import { QuerySidebar } from './_components/query-sidebar'
-import {
-  ResultEmpty,
-  ResultError,
-  ResultInitial,
-  ResultLoading,
-} from './_components/result-empty-states'
-import { ResultTable } from './_components/result-table'
+import { ResultContent } from './_components/result-content'
 import { useQueryExecution } from './_hooks/use-query-execution'
 
 function QueryEditorPage() {
-  // const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
   const { limitRows } = useQueryTableStore()
-  const { selectedQueryId } = useSelectedQueryStore()
-  const { data: queries } = useSuspenseQuery(getQueriesQueryOptions())
 
   const { SQL } = useSQLEditorValue()
-  const { setSQL } = useSQLEditorAction()
   const { result, error, isRunning, execute } = useQueryExecution()
-
-  // 선택된 쿼리가 바뀌면 에디터 SQL을 해당 쿼리의 저장된 값으로 초기화
-  useEffect(() => {
-    const querySql = queries.find((q) => q.id === selectedQueryId)?.sql ?? ''
-    setSQL(querySql)
-  }, [selectedQueryId, setSQL, queries])
-
-  // const dsId = selectedDataSourceId ?? 0
-  // const schema = selectedSchema ?? ''
-  // const tablesQuery = useQuery(getDatasourceTablesQueryOptions(dsId, schema))
-  // const permittedTables = useMemo(
-  //   () => (tablesQuery.data ?? []).filter((t) => t.hasPermission),
-  //   [tablesQuery.data]
-  // )
-  // const columnQueries = useQueries({
-  //   queries: permittedTables.map((t) =>
-  //     getDatasourceColumnsQueryOptions(dsId, schema, t.tableName)
-  //   ),
-  // })
-  // const schemaMap = useMemo(() => {
-  //   const map: Record<string, string[]> = {}
-  //   permittedTables.forEach((table, i) => {
-  //     const columns = columnQueries[i]?.data
-  //     map[table.tableName] = columns ? columns.map((c) => c.name) : []
-  //   })
-  //   return map
-  // }, [permittedTables, columnQueries])
-
-  // useEffect(() => {
-  //   setSchema(schemaMap)
-  // }, [schemaMap, setSchema])
 
   const handleRun = () => {
     void execute(SQL, limitRows)
@@ -120,22 +74,12 @@ function QueryEditorPage() {
               </div>
 
               {/* Results content */}
-              {isRunning ? (
-                <ResultLoading />
-              ) : error ? (
-                <ResultError
-                  message={error}
-                  onRetry={handleRun}
-                />
-              ) : result && result.rowCount > 0 ? (
-                <div className="flex-1 overflow-auto border-t">
-                  <ResultTable result={result} />
-                </div>
-              ) : result ? (
-                <ResultEmpty executionTimeMs={result.executionTimeMs} />
-              ) : (
-                <ResultInitial />
-              )}
+              <ResultContent
+                isRunning={isRunning}
+                error={error}
+                result={result}
+                onRetry={handleRun}
+              />
 
               {/* Status bar */}
               <div className="text-muted-foreground flex h-7 shrink-0 items-center justify-between border-t bg-neutral-50 px-3 text-[11px]">

@@ -2,6 +2,7 @@ import { toast } from 'sonner'
 
 import { useDeleteQueryMutation } from '@/api/queries/delete-query'
 import { AsyncBoundary } from '@/components/errors/query-error-boundary'
+import { useSQLEditorAction } from '@/lib/sql-editor'
 import { useSelectedQueryStore } from '@/stores/selected-query-store'
 import type { SavedQuery } from '@/types/manual/saved-query'
 
@@ -9,10 +10,12 @@ import { QueryList } from './query-list'
 
 export function QuerySidebar() {
   const { selectedQueryId, setSelectedQueryId } = useSelectedQueryStore()
+  const { setSQL } = useSQLEditorAction()
   const deleteQueryMutation = useDeleteQueryMutation()
 
   const handleLoad = (query: SavedQuery) => {
     setSelectedQueryId(query.id)
+    setSQL(query.sql)
   }
 
   const handleDelete = (query: SavedQuery) => {
