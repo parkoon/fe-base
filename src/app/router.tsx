@@ -7,7 +7,7 @@ import { paths } from '@/config/paths'
 import { ProtectedRoute, PublicRoute } from '@/lib/auth'
 
 import AppRoot from './routes/app/root'
-import AuthLogin from './routes/auth/login'
+import AuthLogin from './routes/auth/login/page'
 
 /**
  * lazy 모듈을 변환하여 clientLoader/clientAction에 QueryClient를 주입합니다.
@@ -73,37 +73,37 @@ const createAppRouter = (queryClient: QueryClient) =>
         // 대시보드
         {
           path: paths.app.dashboard.path,
-          lazy: () => import('./routes/app/dashboard').then(convert(queryClient)),
+          lazy: () => import('./routes/app/dashboard/page').then(convert(queryClient)),
         },
 
         // 설정
         {
           path: 'settings',
-          lazy: () => import('./routes/app/settings').then(convert(queryClient)),
+          lazy: () => import('./routes/app/settings/page').then(convert(queryClient)),
         },
 
         // 웹쿼리
         {
           path: paths.app.query.editor.path,
-          lazy: () => import('./routes/app/query/editor').then(convert(queryClient)),
+          lazy: () => import('./routes/app/query/editor/page').then(convert(queryClient)),
         },
         {
           path: paths.app.query.history.path,
-          lazy: () => import('./routes/app/query/history').then(convert(queryClient)),
+          lazy: () => import('./routes/app/query/history/page').then(convert(queryClient)),
         },
 
         // 권한관리
         {
           path: paths.app.permissions.request.path,
-          lazy: () => import('./routes/app/permissions/request').then(convert(queryClient)),
+          lazy: () => import('./routes/app/permissions/request/page').then(convert(queryClient)),
         },
         {
           path: paths.app.permissions.my.path,
-          lazy: () => import('./routes/app/permissions/my').then(convert(queryClient)),
+          lazy: () => import('./routes/app/permissions/my/page').then(convert(queryClient)),
         },
         {
           path: paths.app.permissions.detail.path,
-          lazy: () => import('./routes/app/permissions/detail').then(convert(queryClient)),
+          lazy: () => import('./routes/app/permissions/detail/page').then(convert(queryClient)),
         },
 
         // 결재 (APPROVER 이상)
@@ -112,11 +112,11 @@ const createAppRouter = (queryClient: QueryClient) =>
           children: [
             {
               path: paths.app.approvals.root.path,
-              lazy: () => import('./routes/app/approvals/index').then(convert(queryClient)),
+              lazy: () => import('./routes/app/approvals/list/page').then(convert(queryClient)),
             },
             {
               path: paths.app.approvals.detail.path,
-              lazy: () => import('./routes/app/approvals/detail').then(convert(queryClient)),
+              lazy: () => import('./routes/app/approvals/detail/page').then(convert(queryClient)),
             },
           ],
         },
@@ -127,19 +127,19 @@ const createAppRouter = (queryClient: QueryClient) =>
           children: [
             {
               path: paths.app.admin.datasources.path,
-              lazy: () => import('./routes/app/admin/datasources').then(convert(queryClient)),
+              lazy: () => import('./routes/app/admin/datasources/page').then(convert(queryClient)),
             },
             {
               path: paths.app.admin.users.path,
-              lazy: () => import('./routes/app/admin/users').then(convert(queryClient)),
+              lazy: () => import('./routes/app/admin/users/page').then(convert(queryClient)),
             },
             {
               path: paths.app.admin.permissions.path,
-              lazy: () => import('./routes/app/admin/permissions').then(convert(queryClient)),
+              lazy: () => import('./routes/app/admin/permissions/page').then(convert(queryClient)),
             },
             {
               path: paths.app.admin.audit.path,
-              lazy: () => import('./routes/app/admin/audit').then(convert(queryClient)),
+              lazy: () => import('./routes/app/admin/audit/page').then(convert(queryClient)),
             },
           ],
         },

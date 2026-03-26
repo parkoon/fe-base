@@ -1,7 +1,38 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { FileTextIcon, Trash2Icon } from 'lucide-react'
 
+import { getQueriesQueryOptions } from '@/api/queries/get-queries'
 import { cn } from '@/lib/utils'
 import type { SavedQuery } from '@/types/manual/saved-query'
+
+type QueryListProps = {
+  loadedQueryId: number | null
+  onLoad: (query: SavedQuery) => void
+  onDelete: (query: SavedQuery) => void
+}
+
+export function QueryList({ loadedQueryId, onLoad, onDelete }: QueryListProps) {
+  const { data: queries } = useSuspenseQuery(getQueriesQueryOptions())
+  if (queries.length === 0) {
+    return (
+      <p className="text-muted-foreground px-3 py-4 text-center text-xs">저장된 쿼리가 없습니다</p>
+    )
+  }
+
+  return (
+    <div className="space-y-0.5">
+      {queries.map((query) => (
+        <QueryItem
+          key={query.id}
+          query={query}
+          isActive={query.id === loadedQueryId}
+          onLoad={onLoad}
+          onDelete={onDelete}
+        />
+      ))}
+    </div>
+  )
+}
 
 type QueryItemProps = {
   query: SavedQuery

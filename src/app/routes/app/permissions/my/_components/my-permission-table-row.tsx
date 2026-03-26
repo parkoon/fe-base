@@ -1,12 +1,13 @@
 import { ChevronRightIcon, DatabaseIcon } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { MyPermissionTableStatusBadge } from '@/app/routes/app/permissions/_components/my-permission-table-status-badge'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { paths } from '@/config/paths'
 import { $dayjs } from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 import type { PermissionRequest } from '@/types/manual/permissions'
+
+import { MyPermissionTableStatusBadge } from './my-permission-table-status-badge'
 
 export function MyPermissionTableRow({ item }: { item: PermissionRequest }) {
   return (

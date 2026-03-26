@@ -57,10 +57,7 @@ export function AppProvider({ children }: AppProviderProps) {
               <TooltipProvider>{children}</TooltipProvider>
             </AuthLoader>
           </Suspense>
-          <Toaster
-            position="top-right"
-            closeButton
-          />
+          <Toaster />
           {import.meta.env.DEV && <ReactQueryDevtools />}
         </QueryClientProvider>
       </HelmetProvider>

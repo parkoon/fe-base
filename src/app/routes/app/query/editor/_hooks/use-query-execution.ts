@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 
 import { executeQueryService } from '@/api/queries/execute-query'
-import { useQueryStore } from '@/stores/query-store'
+import { useEditorConfigStore } from '@/stores/editor-config-store'
 
 export type QueryResult = {
   columns: string[]
@@ -19,7 +19,7 @@ type QueryExecutionState = {
 
 export function useQueryExecution() {
   const queryClient = useQueryClient()
-  const { selectedDataSourceId, selectedSchema } = useQueryStore()
+  const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
 
   const [state, setState] = useState<QueryExecutionState>({
     result: null,

@@ -1,14 +1,17 @@
 import type { EditorView } from '@codemirror/view'
-import { useQueries, useQuery } from '@tanstack/react-query'
+import { useQueries, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { getDatasourceColumnsQueryOptions } from '@/api/datasources/get-datasource-columns'
 import { getDatasourceTablesQueryOptions } from '@/api/datasources/get-datasource-tables'
 import { useCreateQueryMutation } from '@/api/queries/create-query'
+import { getQueriesQueryOptions } from '@/api/queries/get-queries'
 import { AsyncBoundary } from '@/components/errors'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { useQueryStore } from '@/stores/query-store'
+import { useEditorConfigStore } from '@/stores/editor-config-store'
+import { useQueryTableStore } from '@/stores/query-table-store'
+import { useSelectedQueryStore } from '@/stores/selected-query-store'
 
 import { EditorToolbar } from './_components/editor-toolbar'
 import { QuerySidebar } from './_components/query-sidebar'
@@ -24,7 +27,23 @@ import { useQueryExecution } from './_hooks/use-query-execution'
 
 function QueryEditorPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { sqlValue, setSqlValue, limitRows, selectedDataSourceId, selectedSchema } = useQueryStore()
+  const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
+  const { limitRows } = useQueryTableStore()
+  const { selectedQueryId } = useSelectedQueryStore()
+  const { data: queries } = useSuspenseQuery(getQueriesQueryOptions())
+
+  const [editedSql, setEditedSql] = useState<{ forQueryId: number | null; sql: string }>(() => ({
+    forQueryId: selectedQueryId,
+    sql: queries.find((q) => q.id === selectedQueryId)?.sql ?? '',
+  }))
+
+  const sqlValue =
+    editedSql.forQueryId === selectedQueryId
+      ? editedSql.sql
+      : (queries.find((q) => q.id === selectedQueryId)?.sql ?? '')
+
+  const setSqlValue = (sql: string) => setEditedSql({ forQueryId: selectedQueryId, sql })
+
   const editorRef = useRef<EditorView | null>(null)
   const { result, error, isRunning, execute } = useQueryExecution()
   const createQueryMutation = useCreateQueryMutation()
