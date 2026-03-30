@@ -107,6 +107,15 @@ const createAppRouter = (queryClient: QueryClient) =>
           lazy: () =>
             import('./routes/app/permissions/table/detail/page').then(convert(queryClient)),
         },
+        {
+          path: paths.app.permissions.masking.root.path,
+          lazy: () => import('./routes/app/permissions/masking/page').then(convert(queryClient)),
+        },
+        {
+          path: paths.app.permissions.masking.request.path,
+          lazy: () =>
+            import('./routes/app/permissions/masking/request/page').then(convert(queryClient)),
+        },
 
         // 결재 (APPROVER 이상)
         {

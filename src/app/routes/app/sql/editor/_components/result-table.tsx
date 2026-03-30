@@ -6,7 +6,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { ClockIcon, LockIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 import {
@@ -17,6 +19,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { paths } from '@/config/paths'
+import { useEditorConfigStore } from '@/stores/editor-config-store'
+import type { MaskingPermissionStatus } from '@/types/manual/masking'
+import type { ColumnMaskingInfo } from '@/types/manual/query'
 
 import type { QueryResult } from '../_hooks/use-query-execution'
 
@@ -46,21 +52,74 @@ function rowsToTsv(selectedRows: Row<Record<string, unknown>>[], columnIds: stri
 export function ResultTable({ result }: { result: QueryResult }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [selectedRowIds, setSelectedRowIds] = useState<Set<number>>(new Set())
+  const navigate = useNavigate()
+  const selectedSchema = useEditorConfigStore((s) => s.selectedSchema)
+
+  const maskingMap = useMemo(() => {
+    const map = new Map<string, MaskingPermissionStatus>()
+    const items: ColumnMaskingInfo[] = result.maskingInfo ?? []
+    for (const info of items) {
+      map.set(info.columnName, info.maskingStatus)
+    }
+    return map
+  }, [result.maskingInfo])
+
+  const handleMaskingClick = useCallback(
+    (columnName: string) => {
+      void navigate(
+        paths.app.permissions.masking.request.getHref({
+          schema: selectedSchema ?? undefined,
+          columns: [columnName],
+        })
+      )
+    },
+    [navigate, selectedSchema]
+  )
 
   const columns = useMemo(
     () =>
-      result.columns.map((col) =>
-        columnHelper.accessor((row) => row[col], {
+      result.columns.map((col) => {
+        const maskingStatus = maskingMap.get(col)
+        const isMasked = maskingStatus !== undefined
+        const isPending = maskingStatus === 'PENDING'
+
+        return columnHelper.accessor((row) => row[col], {
           id: col,
-          header: col,
+          header: isMasked
+            ? () => (
+                <div className="flex items-center gap-1">
+                  <span>{col}</span>
+                  {isPending ? (
+                    <span
+                      title="신청 중"
+                      className="text-yellow-500"
+                    >
+                      <ClockIcon className="size-3" />
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      title="마스킹 권한 신청"
+                      className="text-amber-500 hover:text-amber-600"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleMaskingClick(col)
+                      }}
+                    >
+                      <LockIcon className="size-3" />
+                    </button>
+                  )}
+                </div>
+              )
+            : col,
           cell: (info) => {
             const value = info.getValue<string | number | boolean | null>()
             if (value === null) return <span className="text-muted-foreground italic">NULL</span>
             return String(value)
           },
         })
-      ),
-    [result.columns]
+      }),
+    [result.columns, maskingMap, handleMaskingClick]
   )
 
   const table = useReactTable({
@@ -139,14 +198,19 @@ export function ResultTable({ result }: { result: QueryResult }) {
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               <TableHead className="w-10 text-center text-xs font-semibold">#</TableHead>
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className="text-xs font-semibold"
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const isMasked = maskingMap.has(header.id)
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={
+                      isMasked ? 'text-xs font-semibold text-amber-700' : 'text-xs font-semibold'
+                    }
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                )
+              })}
             </TableRow>
           ))}
         </TableHeader>
@@ -168,18 +232,21 @@ export function ResultTable({ result }: { result: QueryResult }) {
                 <TableCell className="text-muted-foreground w-10 text-center text-xs">
                   {virtualRow.index + 1}
                 </TableCell>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className="cursor-pointer text-xs hover:bg-blue-100/50"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleCellClick(cell.getValue())
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isMasked = maskingMap.has(cell.column.id)
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      className={`cursor-pointer text-xs hover:bg-blue-100/50${isMasked ? 'bg-amber-50/30' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleCellClick(cell.getValue())
+                      }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             )
           })}

@@ -1,6 +1,7 @@
 import {
   ClipboardCheckIcon,
   DatabaseIcon,
+  EyeOffIcon,
   HistoryIcon,
   ScrollTextIcon,
   ShieldCheckIcon,
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 
+import logo from '@/assets/images/logo.png'
 import { NavMain } from '@/components/nav-main'
 import {
   Sidebar,
@@ -58,6 +60,11 @@ const navGroups: NavGroup[] = [
         title: '테이블 권한',
         url: paths.app.permissions.table.root.getHref(),
         icon: <ScrollTextIcon />,
+      },
+      {
+        title: '마스킹 권한',
+        url: paths.app.permissions.masking.root.getHref(),
+        icon: <EyeOffIcon />,
       },
     ],
   },
@@ -118,10 +125,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
             >
               <a href={paths.app.dashboard.getHref()}>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">QueryPie</span>
-                  <span className="truncate text-xs">정보계 DB 관리</span>
+                <div className="flex aspect-square size-8">
+                  <img
+                    src={logo}
+                    className="h-full w-full"
+                  />
                 </div>
+                <span className="truncate font-semibold">정보계 웹쿼리</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -3,12 +3,14 @@ import { useCallback, useState } from 'react'
 
 import { executeQueryService } from '@/api/queries/execute-query'
 import { useEditorConfigStore } from '@/stores/editor-config-store'
+import type { ColumnMaskingInfo } from '@/types/manual/query'
 
 export type QueryResult = {
   columns: string[]
   rows: Record<string, unknown>[]
   rowCount: number
   executionTimeMs: number
+  maskingInfo?: ColumnMaskingInfo[]
 }
 
 type QueryExecutionState = {
@@ -58,6 +60,7 @@ export function useQueryExecution() {
             rows: data.rows,
             rowCount: data.rowCount,
             executionTimeMs: data.executionTimeMs,
+            maskingInfo: data.maskingInfo,
           },
           error: null,
           isRunning: false,

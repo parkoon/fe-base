@@ -1,5 +1,12 @@
 // 웹쿼리 관련 타입 (백엔드 OpenAPI 스펙 확정 전 수동 정의)
 
+import type { MaskingPermissionStatus } from './masking'
+
+export type ColumnMaskingInfo = {
+  columnName: string
+  maskingStatus: MaskingPermissionStatus
+}
+
 export type SchemaInfo = {
   name: string
   tableCount: number
@@ -56,6 +63,7 @@ export type ExecuteQueryResponse = {
   rowCount: number
   executionTimeMs: number
   truncated: boolean
+  maskingInfo?: ColumnMaskingInfo[]
 }
 
 export type TableMetadata = {
