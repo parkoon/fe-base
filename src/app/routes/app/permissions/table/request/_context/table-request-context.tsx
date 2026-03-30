@@ -15,6 +15,7 @@ type TablePermissionRequestState = {
   reason: string
   startDate: Date | undefined
   endDate: Date | undefined
+  currentStep: 1 | 2
 }
 
 type TablePermissionRequestActions = {
@@ -25,12 +26,15 @@ type TablePermissionRequestActions = {
   setStartDate: (date: Date | undefined) => void
   setEndDate: (date: Date | undefined) => void
   submit: () => void
+  nextStep: () => void
+  prevStep: () => void
 }
 
 type TablePermissionRequestContextValue = {
   state: TablePermissionRequestState
   actions: TablePermissionRequestActions
   canSubmit: boolean
+  canProceedToNext: boolean
   isSubmitting: boolean
 }
 
@@ -52,6 +56,7 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
   const [reason, setReason] = useState('')
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1)
 
   const selectSchema = (schema: SchemaWithDatasource) => {
     setSelectedSchema(schema)
@@ -85,11 +90,13 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
       {
         onSuccess: () => {
           toast.success('권한 신청이 완료되었습니다.')
-          void navigate(paths.app.permissions.tables.getHref())
+          void navigate(paths.app.permissions.table.root.getHref())
         },
       }
     )
   }
+
+  const canProceedToNext = selectedSchema !== null && selectedTables.length > 0
 
   const canSubmit =
     selectedSchema !== null &&
@@ -98,8 +105,16 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
     startDate !== undefined &&
     endDate !== undefined
 
+  const nextStep = () => {
+    if (canProceedToNext) setCurrentStep(2)
+  }
+
+  const prevStep = () => {
+    setCurrentStep(1)
+  }
+
   const value: TablePermissionRequestContextValue = {
-    state: { selectedSchema, selectedTables, reason, startDate, endDate },
+    state: { selectedSchema, selectedTables, reason, startDate, endDate, currentStep },
     actions: {
       selectSchema,
       toggleTable,
@@ -108,8 +123,11 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
       setStartDate,
       setEndDate,
       submit,
+      nextStep,
+      prevStep,
     },
     canSubmit,
+    canProceedToNext,
     isSubmitting: mutation.isPending,
   }
 

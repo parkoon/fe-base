@@ -5,7 +5,6 @@ import {
   HistoryIcon,
   LayoutDashboardIcon,
   ScrollTextIcon,
-  SendIcon,
   ShieldCheckIcon,
   TerminalSquareIcon,
   UsersIcon,
@@ -58,13 +57,8 @@ const navGroups: NavGroup[] = [
     label: '권한관리',
     items: [
       {
-        title: '권한 신청',
-        url: paths.app.permissions.table.getHref(),
-        icon: <SendIcon />,
-      },
-      {
         title: '테이블 권한',
-        url: paths.app.permissions.tables.getHref(),
+        url: paths.app.permissions.table.root.getHref(),
         icon: <ScrollTextIcon />,
       },
     ],

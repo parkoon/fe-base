@@ -29,16 +29,18 @@ export const paths = {
     // 권한 관리
     permissions: {
       table: {
-        path: 'permissions/table',
-        getHref: () => '/app/permissions/table',
-      },
-      tables: {
-        path: 'permissions/tables',
-        getHref: () => '/app/permissions/tables',
-      },
-      detail: {
-        path: 'permissions/tables/:id',
-        getHref: (id: string) => `/app/permissions/tables/${id}`,
+        root: {
+          path: 'permissions/table',
+          getHref: () => '/app/permissions/table',
+        },
+        request: {
+          path: 'permissions/table/request',
+          getHref: () => '/app/permissions/table/request',
+        },
+        detail: {
+          path: 'permissions/table/:id',
+          getHref: (id: string) => `/app/permissions/table/${id}`,
+        },
       },
     },
 

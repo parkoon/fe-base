@@ -45,7 +45,7 @@ export function MyPermissionTableRow({ item }: { item: PermissionRequest }) {
       </TableCell>
       <TableCell className="pr-4">
         <Link
-          to={paths.app.permissions.detail.getHref(item.id)}
+          to={paths.app.permissions.table.detail.getHref(item.id)}
           className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex size-7 items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
         >
           <ChevronRightIcon className="size-4" />

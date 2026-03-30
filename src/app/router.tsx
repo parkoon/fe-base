@@ -94,16 +94,18 @@ const createAppRouter = (queryClient: QueryClient) =>
 
         // 권한관리
         {
-          path: paths.app.permissions.table.path,
+          path: paths.app.permissions.table.root.path,
           lazy: () => import('./routes/app/permissions/table/page').then(convert(queryClient)),
         },
         {
-          path: paths.app.permissions.tables.path,
-          lazy: () => import('./routes/app/permissions/tables/page').then(convert(queryClient)),
+          path: paths.app.permissions.table.request.path,
+          lazy: () =>
+            import('./routes/app/permissions/table/request/page').then(convert(queryClient)),
         },
         {
-          path: paths.app.permissions.detail.path,
-          lazy: () => import('./routes/app/permissions/detail/page').then(convert(queryClient)),
+          path: paths.app.permissions.table.detail.path,
+          lazy: () =>
+            import('./routes/app/permissions/table/detail/page').then(convert(queryClient)),
         },
 
         // 결재 (APPROVER 이상)
