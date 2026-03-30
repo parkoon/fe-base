@@ -32,13 +32,13 @@ export const paths = {
         path: 'permissions/table',
         getHref: () => '/app/permissions/table',
       },
-      my: {
-        path: 'permissions/my',
-        getHref: () => '/app/permissions/my',
+      tables: {
+        path: 'permissions/tables',
+        getHref: () => '/app/permissions/tables',
       },
       detail: {
-        path: 'permissions/my/:id',
-        getHref: (id: string) => `/app/permissions/my/${id}`,
+        path: 'permissions/tables/:id',
+        getHref: (id: string) => `/app/permissions/tables/${id}`,
       },
     },
 

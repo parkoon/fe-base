@@ -63,8 +63,8 @@ const navGroups: NavGroup[] = [
         icon: <SendIcon />,
       },
       {
-        title: '내 신청 목록',
-        url: paths.app.permissions.my.getHref(),
+        title: '테이블 권한',
+        url: paths.app.permissions.tables.getHref(),
         icon: <ScrollTextIcon />,
       },
     ],

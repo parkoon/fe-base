@@ -85,7 +85,7 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
       {
         onSuccess: () => {
           toast.success('권한 신청이 완료되었습니다.')
-          void navigate(paths.app.permissions.my.getHref())
+          void navigate(paths.app.permissions.tables.getHref())
         },
       }
     )

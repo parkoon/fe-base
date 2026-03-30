@@ -98,8 +98,8 @@ const createAppRouter = (queryClient: QueryClient) =>
           lazy: () => import('./routes/app/permissions/table/page').then(convert(queryClient)),
         },
         {
-          path: paths.app.permissions.my.path,
-          lazy: () => import('./routes/app/permissions/my/page').then(convert(queryClient)),
+          path: paths.app.permissions.tables.path,
+          lazy: () => import('./routes/app/permissions/tables/page').then(convert(queryClient)),
         },
         {
           path: paths.app.permissions.detail.path,
