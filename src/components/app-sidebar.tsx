@@ -131,7 +131,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     className="h-full w-full"
                   />
                 </div>
-                <span className="truncate font-semibold">정보계 웹쿼리</span>
+                <span className="truncate font-semibold">정보계 웹 쿼리</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

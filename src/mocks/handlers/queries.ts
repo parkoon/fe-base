@@ -87,7 +87,7 @@ export const queryHandlers = [
         rowCount: rows.length,
         executionTimeMs,
         truncated: count >= (limitRows || 100),
-        ...(isMemberQuery && { maskingInfo: TB_MEMBER_MASKING_INFO }),
+        ...(isMemberQuery && { maskingInfo: TB_MEMBER_MASKING_INFO, tableName: 'TB_MEMBER' }),
       })
     }
 

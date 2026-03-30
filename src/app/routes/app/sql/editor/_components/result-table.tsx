@@ -8,7 +8,6 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { ClockIcon, LockIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 import {
@@ -19,12 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { paths } from '@/config/paths'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useEditorConfigStore } from '@/stores/editor-config-store'
 import type { MaskingPermissionStatus } from '@/types/manual/masking'
+import { MASKING_STATUS_MAP } from '@/types/manual/masking'
 import type { ColumnMaskingInfo } from '@/types/manual/query'
 
 import type { QueryResult } from '../_hooks/use-query-execution'
+import { MaskingRequestDialog } from './masking-request-dialog'
 
 const ROW_HEIGHT = 32
 const OVERSCAN = 10
@@ -52,7 +53,7 @@ function rowsToTsv(selectedRows: Row<Record<string, unknown>>[], columnIds: stri
 export function ResultTable({ result }: { result: QueryResult }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [selectedRowIds, setSelectedRowIds] = useState<Set<number>>(new Set())
-  const navigate = useNavigate()
+  const [dialogColumn, setDialogColumn] = useState<string | null>(null)
   const selectedSchema = useEditorConfigStore((s) => s.selectedSchema)
 
   const maskingMap = useMemo(() => {
@@ -64,17 +65,9 @@ export function ResultTable({ result }: { result: QueryResult }) {
     return map
   }, [result.maskingInfo])
 
-  const handleMaskingClick = useCallback(
-    (columnName: string) => {
-      void navigate(
-        paths.app.permissions.masking.request.getHref({
-          schema: selectedSchema ?? undefined,
-          columns: [columnName],
-        })
-      )
-    },
-    [navigate, selectedSchema]
-  )
+  const handleMaskingClick = useCallback((columnName: string) => {
+    setDialogColumn(columnName)
+  }, [])
 
   const columns = useMemo(
     () =>
@@ -90,24 +83,36 @@ export function ResultTable({ result }: { result: QueryResult }) {
                 <div className="flex items-center gap-1">
                   <span>{col}</span>
                   {isPending ? (
-                    <span
-                      title="신청 중"
-                      className="text-yellow-500"
-                    >
-                      <ClockIcon className="size-3" />
-                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="text-yellow-500">
+                          <ClockIcon className="size-3" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {MASKING_STATUS_MAP.PENDING.label} — 권한 신청이 검토 중입니다
+                      </TooltipContent>
+                    </Tooltip>
                   ) : (
-                    <button
-                      type="button"
-                      title="마스킹 권한 신청"
-                      className="text-amber-500 hover:text-amber-600"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleMaskingClick(col)
-                      }}
-                    >
-                      <LockIcon className="size-3" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-amber-500 hover:text-amber-600"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleMaskingClick(col)
+                          }}
+                        >
+                          <LockIcon className="size-3" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {maskingStatus === 'REJECTED'
+                          ? `${MASKING_STATUS_MAP.REJECTED.label} — 클릭하여 재신청`
+                          : '마스킹 정책 적용 중 — 클릭하여 권한 신청'}
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               )
@@ -188,78 +193,91 @@ export function ResultTable({ result }: { result: QueryResult }) {
   }, [selectedRowIds, rows, result.columns])
 
   return (
-    <div
-      ref={scrollRef}
-      className="h-full overflow-auto focus:outline-none"
-      tabIndex={0}
-    >
-      <Table>
-        <TableHeader className="sticky top-0 z-10 bg-neutral-50">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              <TableHead className="w-10 text-center text-xs font-semibold">#</TableHead>
-              {headerGroup.headers.map((header) => {
-                const isMasked = maskingMap.has(header.id)
-                return (
-                  <TableHead
-                    key={header.id}
-                    className={
-                      isMasked ? 'text-xs font-semibold text-amber-700' : 'text-xs font-semibold'
-                    }
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {virtualizer.getVirtualItems().length > 0 && (
-            <tr style={{ height: virtualizer.getVirtualItems()[0].start }} />
-          )}
-          {virtualizer.getVirtualItems().map((virtualRow) => {
-            const row = rows[virtualRow.index]
-            const isSelected = selectedRowIds.has(virtualRow.index)
-            return (
-              <TableRow
-                key={row.id}
-                data-index={virtualRow.index}
-                ref={virtualizer.measureElement}
-                className={isSelected ? 'bg-blue-50' : undefined}
-                onClick={(e) => handleRowClick(virtualRow.index, e)}
-              >
-                <TableCell className="text-muted-foreground w-10 text-center text-xs">
-                  {virtualRow.index + 1}
-                </TableCell>
-                {row.getVisibleCells().map((cell) => {
-                  const isMasked = maskingMap.has(cell.column.id)
+    <>
+      {dialogColumn && (
+        <MaskingRequestDialog
+          open={dialogColumn !== null}
+          onOpenChange={(open) => {
+            if (!open) setDialogColumn(null)
+          }}
+          schema={selectedSchema ?? ''}
+          tableName={result.tableName ?? ''}
+          columnName={dialogColumn}
+        />
+      )}
+      <div
+        ref={scrollRef}
+        className="h-full overflow-auto focus:outline-none"
+        tabIndex={0}
+      >
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-neutral-50">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                <TableHead className="w-10 text-center text-xs font-semibold">#</TableHead>
+                {headerGroup.headers.map((header) => {
+                  const isMasked = maskingMap.has(header.id)
                   return (
-                    <TableCell
-                      key={cell.id}
-                      className={`cursor-pointer text-xs hover:bg-blue-100/50${isMasked ? 'bg-amber-50/30' : ''}`}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleCellClick(cell.getValue())
-                      }}
+                    <TableHead
+                      key={header.id}
+                      className={
+                        isMasked ? 'text-xs font-semibold text-amber-700' : 'text-xs font-semibold'
+                      }
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   )
                 })}
               </TableRow>
-            )
-          })}
-          {virtualizer.getVirtualItems().length > 0 && (
-            <tr
-              style={{
-                height:
-                  virtualizer.getTotalSize() - (virtualizer.getVirtualItems().at(-1)?.end ?? 0),
-              }}
-            />
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {virtualizer.getVirtualItems().length > 0 && (
+              <tr style={{ height: virtualizer.getVirtualItems()[0].start }} />
+            )}
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const row = rows[virtualRow.index]
+              const isSelected = selectedRowIds.has(virtualRow.index)
+              return (
+                <TableRow
+                  key={row.id}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className={isSelected ? 'bg-blue-50' : undefined}
+                  onClick={(e) => handleRowClick(virtualRow.index, e)}
+                >
+                  <TableCell className="text-muted-foreground w-10 text-center text-xs">
+                    {virtualRow.index + 1}
+                  </TableCell>
+                  {row.getVisibleCells().map((cell) => {
+                    const isMasked = maskingMap.has(cell.column.id)
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={`cursor-pointer text-xs hover:bg-blue-100/50${isMasked ? 'bg-amber-50/30' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleCellClick(cell.getValue())
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              )
+            })}
+            {virtualizer.getVirtualItems().length > 0 && (
+              <tr
+                style={{
+                  height:
+                    virtualizer.getTotalSize() - (virtualizer.getVirtualItems().at(-1)?.end ?? 0),
+                }}
+              />
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }

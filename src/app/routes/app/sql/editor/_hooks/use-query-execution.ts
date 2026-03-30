@@ -11,6 +11,7 @@ export type QueryResult = {
   rowCount: number
   executionTimeMs: number
   maskingInfo?: ColumnMaskingInfo[]
+  tableName?: string
 }
 
 type QueryExecutionState = {
@@ -61,6 +62,7 @@ export function useQueryExecution() {
             rowCount: data.rowCount,
             executionTimeMs: data.executionTimeMs,
             maskingInfo: data.maskingInfo,
+            tableName: data.tableName,
           },
           error: null,
           isRunning: false,

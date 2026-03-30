@@ -64,6 +64,7 @@ export type ExecuteQueryResponse = {
   executionTimeMs: number
   truncated: boolean
   maskingInfo?: ColumnMaskingInfo[]
+  tableName?: string
 }
 
 export type TableMetadata = {

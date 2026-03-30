@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { createContext, useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 import { usePostMaskingRequestMutation } from '@/api/permissions/masking/post-masking-request'
@@ -27,7 +27,6 @@ type MaskingRequestContextValue = {
   state: MaskingRequestState
   actions: MaskingRequestActions
   currentStep: 1 | 2 | 3
-  isPreFilled: boolean
   canProceedToStep2: boolean
   canProceedToStep3: boolean
   canSubmit: boolean
@@ -44,41 +43,17 @@ export function useMaskingRequest() {
 
 export function MaskingRequestProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
   const mutation = usePostMaskingRequestMutation()
 
-  // URL params를 useState 초기화 함수로 한 번만 읽음 (mount 시점 스냅샷)
-  const [isPreFilled] = useState(
-    () => searchParams.get('schema') !== null && searchParams.get('table') !== null
-  )
-  const [selectedSchema, setSelectedSchemaState] = useState<string | null>(() =>
-    searchParams.get('schema')
-  )
-  const [selectedTable, setSelectedTableState] = useState<string | null>(() =>
-    searchParams.get('table')
-  )
+  const [selectedSchema, setSelectedSchemaState] = useState<string | null>(null)
+  const [selectedTable, setSelectedTableState] = useState<string | null>(null)
   const [tableComment, setTableComment] = useState('')
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(
-    () => searchParams.get('columns')?.split(',').filter(Boolean) ?? []
-  )
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([])
   const [reason, setReason] = useState('')
-
-  const rawStep = Number(searchParams.get('step'))
-  const currentStep: 1 | 2 | 3 = rawStep === 1 || rawStep === 2 || rawStep === 3 ? rawStep : 1
-
-  // 초기 step이 없으면 1로 설정
-  useEffect(() => {
-    if (!searchParams.get('step')) {
-      const next = new URLSearchParams(searchParams)
-      next.set('step', '1')
-      setSearchParams(next, { replace: true })
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
 
   const goToStep = (step: 1 | 2 | 3) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('step', String(step))
-    setSearchParams(next, { replace: false })
+    setCurrentStep(step)
   }
 
   const setSchema = (schema: string) => {
@@ -129,7 +104,6 @@ export function MaskingRequestProvider({ children }: { children: React.ReactNode
     state: { selectedSchema, selectedTable, tableComment, selectedColumns, reason },
     actions: { setSchema, setTable, toggleColumn, setReason, goToStep, submit },
     currentStep,
-    isPreFilled,
     canProceedToStep2,
     canProceedToStep3,
     canSubmit,

@@ -49,14 +49,7 @@ export const paths = {
         },
         request: {
           path: 'permissions/masking/request',
-          getHref: (params?: { schema?: string; table?: string; columns?: string[] }) => {
-            const search = new URLSearchParams()
-            if (params?.schema) search.set('schema', params.schema)
-            if (params?.table) search.set('table', params.table)
-            if (params?.columns?.length) search.set('columns', params.columns.join(','))
-            const qs = search.toString()
-            return `/app/permissions/masking/request${qs ? `?${qs}` : ''}`
-          },
+          getHref: () => '/app/permissions/masking/request',
         },
       },
     },
