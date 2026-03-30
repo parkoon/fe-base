@@ -9,7 +9,7 @@ function AppRoot() {
   const user = useAuthStore((s) => s.user)
 
   return (
-    <SidebarProvider>
+    <SidebarProvider style={{ '--sidebar-width': '220px' } as React.CSSProperties}>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-12 shrink-0 items-center justify-end border-b px-4">
