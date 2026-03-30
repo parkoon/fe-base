@@ -84,9 +84,7 @@ function Step2() {
           <LayersIcon className="text-muted-foreground size-4 shrink-0" />
           <div className="min-w-0">
             <p className="text-muted-foreground text-xs">Schema</p>
-            <p className="truncate font-mono text-sm font-medium">
-              {state.selectedSchema!.datasourceName} / {state.selectedSchema!.schemaName}
-            </p>
+            <p className="truncate font-mono text-sm font-medium">{state.selectedSchema!.name}</p>
           </div>
         </div>
         <Separator />

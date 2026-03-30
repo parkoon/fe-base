@@ -22,7 +22,6 @@ export function TableRequestSchemaPicker() {
   const [open, setOpen] = useState(false)
 
   const selected = state.selectedSchema
-  const displayValue = selected ? `${selected.datasourceName} / ${selected.schemaName}` : null
 
   return (
     <Popover
@@ -35,12 +34,12 @@ export function TableRequestSchemaPicker() {
           role="combobox"
           className={cn(
             'w-full justify-between gap-2 px-3 font-normal',
-            !displayValue && 'text-muted-foreground'
+            !selected && 'text-muted-foreground'
           )}
         >
           <span className="flex items-center gap-2 truncate">
             <LayersIcon className="text-muted-foreground size-4 shrink-0" />
-            <span className="truncate">{displayValue ?? 'Schema 선택'}</span>
+            <span className="truncate">{selected ? selected.name : 'Schema 선택'}</span>
           </span>
           <ChevronsUpDownIcon className="size-3.5 shrink-0 opacity-50" />
         </Button>
@@ -53,27 +52,23 @@ export function TableRequestSchemaPicker() {
           <CommandList>
             <CommandEmpty>스키마가 없습니다</CommandEmpty>
             <CommandGroup>
-              {schemasQuery.data.map((schema) => {
-                const key = `${schema.datasourceId}:${schema.schemaName}`
-                return (
-                  <CommandItem
-                    key={key}
-                    value={key}
-                    keywords={[schema.datasourceName, schema.schemaName]}
-                    onSelect={() => {
-                      actions.selectSchema(schema)
-                      setOpen(false)
-                    }}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-mono text-sm">{schema.schemaName}</span>
-                      <span className="text-muted-foreground text-xs">
-                        {schema.datasourceName} · {schema.tableCount}개 테이블
-                      </span>
-                    </div>
-                  </CommandItem>
-                )
-              })}
+              {schemasQuery.data.map((schema) => (
+                <CommandItem
+                  key={schema.name}
+                  value={schema.name}
+                  onSelect={() => {
+                    actions.selectSchema(schema)
+                    setOpen(false)
+                  }}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-mono text-sm">{schema.name}</span>
+                    <span className="text-muted-foreground text-xs">
+                      {schema.tableCount}개 테이블
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>

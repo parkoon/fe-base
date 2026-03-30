@@ -43,8 +43,6 @@ export const APPROVAL_STATUS_MAP: Record<ApprovalStatus, ApprovalStatusLabel> = 
 
 export type PermissionRequest = {
   id: string
-  datasourceId: number
-  datasourceName: string
   schema: string
   tableName: string
   tableComment: string
@@ -57,7 +55,6 @@ export type PermissionRequest = {
 }
 
 export type PermissionRequestForm = {
-  datasourceId: number
   schema: string
   tables: { tableName: string; tableComment: string }[]
   reason: string

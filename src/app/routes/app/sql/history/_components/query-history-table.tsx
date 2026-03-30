@@ -74,13 +74,8 @@ export function HistoryTableSkeleton() {
 export function QueryHistoryTable() {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = Number(searchParams.get('page') ?? 0)
-  const dataSourceId = searchParams.get('dataSourceId')
-    ? Number(searchParams.get('dataSourceId'))
-    : undefined
 
-  const queryHistoryQuery = useSuspenseQuery(
-    getQueryHistoryQueryOptions({ page, size: PAGE_SIZE, dataSourceId })
-  )
+  const queryHistoryQuery = useSuspenseQuery(getQueryHistoryQueryOptions({ page, size: PAGE_SIZE }))
 
   const items = queryHistoryQuery.data.items
   const total = queryHistoryQuery.data.total
@@ -105,7 +100,6 @@ export function QueryHistoryTable() {
             <TableRow>
               <TableHead className="w-40">실행 시각</TableHead>
               <TableHead>SQL</TableHead>
-              <TableHead className="w-36">DataSource</TableHead>
               <TableHead className="w-28">Schema</TableHead>
               <TableHead className="w-20 text-right">건수</TableHead>
               <TableHead className="w-24 text-right">실행 시간</TableHead>
@@ -116,7 +110,7 @@ export function QueryHistoryTable() {
             {items.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={6}
                   className="text-muted-foreground py-12 text-center text-sm"
                 >
                   실행 이력이 없습니다.
@@ -131,7 +125,6 @@ export function QueryHistoryTable() {
                   <TableCell>
                     <SqlPreview sql={item.sql} />
                   </TableCell>
-                  <TableCell className="text-xs">{item.dataSourceName}</TableCell>
                   <TableCell className="font-mono text-xs">{item.schema}</TableCell>
                   <TableCell className="text-right text-xs">
                     {item.status === 'success' ? item.rowCount.toLocaleString() : '-'}

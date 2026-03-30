@@ -5,7 +5,6 @@ import { useCreateQueryMutation } from '@/api/queries/create-query'
 import { Button } from '@/components/ui/button'
 import { useSQLEditorValue } from '@/lib/sql-editor'
 
-import { DataSourceSelect } from './datasource-select'
 import { LimitSelect } from './limit-select'
 import { SaveQueryDialog } from './save-query-dialog'
 import { SchemaSelect } from './schema-select'
@@ -34,12 +33,8 @@ export function EditorToolbar({ onRun, isRunning }: EditorToolbarProps) {
 
   return (
     <div className="flex h-11 shrink-0 items-center justify-between border-b px-3">
-      {/* Left: DataSource / Schema selectors */}
+      {/* Left: Schema selector */}
       <div className="flex items-center gap-2">
-        <DataSourceSelect />
-
-        <span className="text-muted-foreground/40 text-xs">/</span>
-
         <SchemaSelect />
       </div>
 

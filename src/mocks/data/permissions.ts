@@ -3,8 +3,6 @@ import type { PermissionRequest, PermissionRequestDetail } from '@/types/manual/
 export const mockPermissionRequests: PermissionRequest[] = [
   {
     id: 'PR-2026-001',
-    datasourceId: 1,
-    datasourceName: '정보계-Oracle',
     schema: 'HDMF_PROD',
     tableName: 'TB_MEMBER_ADDR',
     tableComment: '조합원 주소',
@@ -17,8 +15,6 @@ export const mockPermissionRequests: PermissionRequest[] = [
   },
   {
     id: 'PR-2026-002',
-    datasourceId: 1,
-    datasourceName: '정보계-Oracle',
     schema: 'HDMF_PROD',
     tableName: 'TB_LOAN_DETAIL',
     tableComment: '대출 상세',
@@ -31,8 +27,6 @@ export const mockPermissionRequests: PermissionRequest[] = [
   },
   {
     id: 'PR-2026-003',
-    datasourceId: 2,
-    datasourceName: '분석계-PostgreSQL',
     schema: 'public',
     tableName: 'dim_customers',
     tableComment: '고객 디멘전',
@@ -45,8 +39,6 @@ export const mockPermissionRequests: PermissionRequest[] = [
   },
   {
     id: 'PR-2026-004',
-    datasourceId: 1,
-    datasourceName: '정보계-Oracle',
     schema: 'HDMF_PROD',
     tableName: 'TB_SALARY',
     tableComment: '급여 정보',
@@ -59,8 +51,6 @@ export const mockPermissionRequests: PermissionRequest[] = [
   },
   {
     id: 'PR-2026-005',
-    datasourceId: 3,
-    datasourceName: '마케팅-MySQL',
     schema: 'marketing',
     tableName: 'tb_target_list',
     tableComment: '대상자 목록',

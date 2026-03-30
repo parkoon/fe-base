@@ -5,12 +5,12 @@ import { toast } from 'sonner'
 import { usePostPermissionsRequestMutation } from '@/api/permissions/post-permissions-request'
 import { paths } from '@/config/paths'
 import { $dayjs } from '@/lib/dayjs'
-import type { SchemaWithDatasource } from '@/types/manual/datasource'
+import type { SchemaInfo } from '@/types/manual/query'
 
 type SelectedTable = { tableName: string; tableComment: string }
 
 type TablePermissionRequestState = {
-  selectedSchema: SchemaWithDatasource | null
+  selectedSchema: SchemaInfo | null
   selectedTables: SelectedTable[]
   reason: string
   startDate: Date | undefined
@@ -19,7 +19,7 @@ type TablePermissionRequestState = {
 }
 
 type TablePermissionRequestActions = {
-  selectSchema: (schema: SchemaWithDatasource) => void
+  selectSchema: (schema: SchemaInfo) => void
   toggleTable: (table: SelectedTable) => void
   removeTable: (tableName: string) => void
   setReason: (reason: string) => void
@@ -51,14 +51,14 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
   const navigate = useNavigate()
   const mutation = usePostPermissionsRequestMutation()
 
-  const [selectedSchema, setSelectedSchema] = useState<SchemaWithDatasource | null>(null)
+  const [selectedSchema, setSelectedSchema] = useState<SchemaInfo | null>(null)
   const [selectedTables, setSelectedTables] = useState<SelectedTable[]>([])
   const [reason, setReason] = useState('')
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
   const [currentStep, setCurrentStep] = useState<1 | 2>(1)
 
-  const selectSchema = (schema: SchemaWithDatasource) => {
+  const selectSchema = (schema: SchemaInfo) => {
     setSelectedSchema(schema)
     setSelectedTables([])
   }
@@ -80,8 +80,7 @@ export function TablePermissionRequestProvider({ children }: { children: React.R
 
     mutation.mutate(
       {
-        datasourceId: selectedSchema.datasourceId,
-        schema: selectedSchema.schemaName,
+        schema: selectedSchema.name,
         tables: selectedTables,
         reason: reason.trim(),
         startDate: $dayjs(startDate).format('YYYY-MM-DD'),

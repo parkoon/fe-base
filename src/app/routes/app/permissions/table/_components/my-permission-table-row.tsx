@@ -1,4 +1,4 @@
-import { ChevronRightIcon, DatabaseIcon } from 'lucide-react'
+import { ChevronRightIcon, LayersIcon } from 'lucide-react'
 import { Link } from 'react-router'
 
 import { TableCell, TableRow } from '@/components/ui/table'
@@ -15,10 +15,8 @@ export function MyPermissionTableRow({ item }: { item: PermissionRequest }) {
       <TableCell className="text-muted-foreground pl-4 font-mono text-xs">{item.id}</TableCell>
       <TableCell>
         <div className="flex items-center gap-1.5">
-          <DatabaseIcon className="text-muted-foreground size-3.5 shrink-0" />
-          <span className="text-sm">{item.datasourceName}</span>
-          <span className="text-muted-foreground text-xs">/</span>
-          <span className="text-muted-foreground text-sm">{item.schema}</span>
+          <LayersIcon className="text-muted-foreground size-3.5 shrink-0" />
+          <span className="text-sm">{item.schema}</span>
         </div>
       </TableCell>
       <TableCell>

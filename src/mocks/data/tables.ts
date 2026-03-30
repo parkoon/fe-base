@@ -1,9 +1,7 @@
-import type { ColumnInfo, TableInfo } from '@/types/manual/datasource'
+import type { TableInfo } from '@/types/manual/query'
 
-type TableKey = string // `${datasourceId}:${schema}`
-
-export const mockTables: Record<TableKey, TableInfo[]> = {
-  '1:HDMF_PROD': [
+export const mockTables: Record<string, TableInfo[]> = {
+  HDMF_PROD: [
     { tableName: 'TB_MEMBER', tableComment: '조합원 기본정보', hasPermission: true },
     { tableName: 'TB_MEMBER_ADDR', tableComment: '조합원 주소', hasPermission: false },
     { tableName: 'TB_LOAN', tableComment: '대출 원장', hasPermission: true },
@@ -15,25 +13,28 @@ export const mockTables: Record<TableKey, TableInfo[]> = {
     { tableName: 'TB_CODE', tableComment: '공통코드', hasPermission: true },
     { tableName: 'TB_CODE_DETAIL', tableComment: '공통코드 상세', hasPermission: true },
   ],
-  '1:HDMF_MART': [
+  HDMF_MART: [
     { tableName: 'DM_LOAN_SUMMARY', tableComment: '대출 요약 마트', hasPermission: true },
     { tableName: 'DM_MEMBER_STAT', tableComment: '조합원 통계', hasPermission: false },
     { tableName: 'DM_DEPOSIT_DAILY', tableComment: '일별 예탁금', hasPermission: true },
   ],
-  '2:public': [
+  public: [
     { tableName: 'fact_transactions', tableComment: '거래 팩트', hasPermission: true },
     { tableName: 'dim_products', tableComment: '상품 디멘전', hasPermission: true },
     { tableName: 'dim_customers', tableComment: '고객 디멘전', hasPermission: false },
     { tableName: 'agg_monthly_sales', tableComment: '월별 매출 집계', hasPermission: true },
   ],
-  '3:marketing': [
+  marketing: [
     { tableName: 'tb_campaign', tableComment: '캠페인 마스터', hasPermission: true },
     { tableName: 'tb_target_list', tableComment: '대상자 목록', hasPermission: false },
     { tableName: 'tb_response_log', tableComment: '응답 로그', hasPermission: true },
   ],
 }
 
-export const mockColumns: Record<string, ColumnInfo[]> = {
+export const mockColumns: Record<
+  string,
+  { name: string; type: string; comment: string; isMasked: boolean }[]
+> = {
   TB_MEMBER: [
     { name: 'MEMBER_ID', type: 'NUMBER(10)', comment: '조합원 ID', isMasked: false },
     { name: 'MEMBER_NAME', type: 'VARCHAR2(50)', comment: '조합원명', isMasked: true },

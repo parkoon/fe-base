@@ -19,7 +19,7 @@ type QueryExecutionState = {
 
 export function useQueryExecution() {
   const queryClient = useQueryClient()
-  const { selectedDataSourceId, selectedSchema } = useEditorConfigStore()
+  const { selectedSchema } = useEditorConfigStore()
 
   const [state, setState] = useState<QueryExecutionState>({
     result: null,
@@ -34,10 +34,10 @@ export function useQueryExecution() {
         return
       }
 
-      if (!selectedDataSourceId || !selectedSchema) {
+      if (!selectedSchema) {
         setState({
           result: null,
-          error: 'DataSource와 Schema를 선택해주세요.',
+          error: 'Schema를 선택해주세요.',
           isRunning: false,
         })
         return
@@ -48,7 +48,6 @@ export function useQueryExecution() {
       try {
         const data = await executeQueryService({
           sql,
-          dataSourceId: selectedDataSourceId,
           schema: selectedSchema,
           limitRows,
         })
@@ -73,7 +72,7 @@ export function useQueryExecution() {
         })
       }
     },
-    [selectedDataSourceId, selectedSchema, queryClient]
+    [selectedSchema, queryClient]
   )
 
   return { ...state, execute }

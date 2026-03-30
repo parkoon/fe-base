@@ -41,8 +41,6 @@ export const permissionHandlers = [
 
     const newRequests = tables.map((table) => ({
       id: newId,
-      datasourceId: body.datasourceId as number,
-      datasourceName: '정보계-Oracle',
       schema: body.schema as string,
       tableName: table.tableName,
       tableComment: table.tableComment,

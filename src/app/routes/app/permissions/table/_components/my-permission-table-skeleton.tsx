@@ -25,7 +25,7 @@ export function MyPermissionTableSkeleton({ rows = 5 }: { rows?: number }) {
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-[130px] pl-4">신청번호</TableHead>
-            <TableHead className="w-[200px]">DataSource / Schema</TableHead>
+            <TableHead className="w-[200px]">Schema</TableHead>
             <TableHead>테이블</TableHead>
             <TableHead className="w-[220px]">사유</TableHead>
             <TableHead className="w-[100px]">신청일</TableHead>

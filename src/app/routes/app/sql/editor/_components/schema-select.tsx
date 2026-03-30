@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { CheckIcon, ChevronDownIcon, LayersIcon } from 'lucide-react'
 
-import { getDatasourceSchemasQueryOptions } from '@/api/datasources/get-datasource-schemas'
+import { getSchemasQueryOptions } from '@/api/schemas/get-schemas'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +11,15 @@ import {
 import { useEditorConfigStore } from '@/stores/editor-config-store'
 
 export function SchemaSelect() {
-  const { selectedDataSourceId, selectedSchema, setSchema } = useEditorConfigStore()
-  const schemasQuery = useQuery(getDatasourceSchemasQueryOptions(selectedDataSourceId ?? 0))
+  const { selectedSchema, setSchema } = useEditorConfigStore()
+  const schemasQuery = useQuery(getSchemasQueryOptions())
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          disabled={!selectedDataSourceId}
-          className="hover:bg-accent flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+          className="hover:bg-accent flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors"
         >
           <LayersIcon className="text-muted-foreground size-3.5" />
           <span className="text-muted-foreground text-xs">Schema</span>

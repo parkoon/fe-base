@@ -7,7 +7,6 @@ import { querypie } from '../querypie'
 type GetQueryHistoryParams = {
   page: number
   size: number
-  dataSourceId?: number
 }
 
 export const getQueryHistoryService = (

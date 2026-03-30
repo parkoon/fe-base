@@ -1,5 +1,16 @@
 // 웹쿼리 관련 타입 (백엔드 OpenAPI 스펙 확정 전 수동 정의)
 
+export type SchemaInfo = {
+  name: string
+  tableCount: number
+}
+
+export type TableInfo = {
+  tableName: string
+  tableComment: string
+  hasPermission: boolean
+}
+
 export type QueryResult = {
   columns: QueryColumn[]
   rows: Record<string, unknown>[]
@@ -17,8 +28,6 @@ export type QueryColumn = {
 export type QueryHistoryItem = {
   id: string
   sql: string
-  dataSourceId: number
-  dataSourceName: string
   schema: string
   rowCount: number
   executionTimeMs: number
@@ -36,7 +45,6 @@ export type QueryHistoryListResponse = {
 
 export type ExecuteQueryRequest = {
   sql: string
-  dataSourceId: number
   schema: string
   limitRows: number
 }

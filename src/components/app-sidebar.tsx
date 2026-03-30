@@ -1,9 +1,7 @@
 import {
   ClipboardCheckIcon,
   DatabaseIcon,
-  HardDriveIcon,
   HistoryIcon,
-  LayoutDashboardIcon,
   ScrollTextIcon,
   ShieldCheckIcon,
   TerminalSquareIcon,
@@ -79,11 +77,6 @@ const navGroups: NavGroup[] = [
     minRole: 'ADMIN',
     items: [
       {
-        title: 'DataSource 관리',
-        url: paths.app.admin.datasources.getHref(),
-        icon: <HardDriveIcon />,
-      },
-      {
         title: '사용자 관리',
         url: paths.app.admin.users.getHref(),
         icon: <UsersIcon />,
@@ -125,9 +118,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
             >
               <a href={paths.app.dashboard.getHref()}>
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <LayoutDashboardIcon className="size-4" />
-                </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">QueryPie</span>
                   <span className="truncate text-xs">정보계 DB 관리</span>

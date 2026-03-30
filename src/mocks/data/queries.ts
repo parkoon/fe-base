@@ -49,19 +49,11 @@ export function deleteMockQuery(id: number): boolean {
 
 // ───── 실행 이력 Mock 데이터 ─────
 
-const dataSourceNames: Record<number, string> = {
-  1: '정보계-Oracle',
-  2: '분석계-PostgreSQL',
-  3: '마케팅-MySQL',
-}
-
 const mockHistoryBase: QueryHistoryItem[] = [
   {
     id: 'h-001',
     sql: 'SELECT * FROM T_CUSTOMER ORDER BY CREATED_AT DESC',
-    dataSourceId: 1,
-    dataSourceName: '정보계-Oracle',
-    schema: 'hdmf_prod',
+    schema: 'HDMF_PROD',
     rowCount: 100,
     executionTimeMs: 124,
     status: 'success',
@@ -70,9 +62,7 @@ const mockHistoryBase: QueryHistoryItem[] = [
   {
     id: 'h-002',
     sql: 'SELECT ID, NAME, EMAIL FROM USERS WHERE DEPT_CODE = :dept',
-    dataSourceId: 1,
-    dataSourceName: '정보계-Oracle',
-    schema: 'hdmf_prod',
+    schema: 'HDMF_PROD',
     rowCount: 0,
     executionTimeMs: 89,
     status: 'error',
@@ -82,8 +72,6 @@ const mockHistoryBase: QueryHistoryItem[] = [
   {
     id: 'h-003',
     sql: "SELECT TO_CHAR(ORDER_DATE, 'YYYY-MM') AS MONTH, COUNT(*) AS CNT FROM ORDERS GROUP BY TO_CHAR(ORDER_DATE, 'YYYY-MM')",
-    dataSourceId: 2,
-    dataSourceName: '분석계-PostgreSQL',
     schema: 'analytics',
     rowCount: 12,
     executionTimeMs: 231,
@@ -93,9 +81,7 @@ const mockHistoryBase: QueryHistoryItem[] = [
   {
     id: 'h-004',
     sql: 'SELECT * FROM T_CONTRACT WHERE CONTRACT_DATE >= SYSDATE - 90',
-    dataSourceId: 1,
-    dataSourceName: '정보계-Oracle',
-    schema: 'hdmf_prod',
+    schema: 'HDMF_PROD',
     rowCount: 500,
     executionTimeMs: 387,
     status: 'success',
@@ -104,8 +90,6 @@ const mockHistoryBase: QueryHistoryItem[] = [
   {
     id: 'h-005',
     sql: 'SELECT PRODUCT_ID, SUM(AMOUNT) AS TOTAL FROM T_SALES GROUP BY PRODUCT_ID ORDER BY TOTAL DESC',
-    dataSourceId: 3,
-    dataSourceName: '마케팅-MySQL',
     schema: 'marketing',
     rowCount: 88,
     executionTimeMs: 156,
@@ -117,24 +101,20 @@ const mockHistoryBase: QueryHistoryItem[] = [
 const mockHistoryItems: QueryHistoryItem[] = [...mockHistoryBase]
 let historyNextId = 100
 
-export function getMockHistory(params: { page: number; size: number; dataSourceId?: number }): {
+export function getMockHistory(params: { page: number; size: number }): {
   items: QueryHistoryItem[]
   total: number
   page: number
   size: number
 } {
-  const filtered = params.dataSourceId
-    ? mockHistoryItems.filter((h) => h.dataSourceId === params.dataSourceId)
-    : mockHistoryItems
-
-  const sorted = [...filtered].sort(
+  const sorted = [...mockHistoryItems].sort(
     (a, b) => new Date(b.executedAt).getTime() - new Date(a.executedAt).getTime()
   )
 
   const start = params.page * params.size
   const items = sorted.slice(start, start + params.size)
 
-  return { items, total: filtered.length, page: params.page, size: params.size }
+  return { items, total: mockHistoryItems.length, page: params.page, size: params.size }
 }
 
 export function addMockHistory(
@@ -144,7 +124,6 @@ export function addMockHistory(
     ...item,
     id: `h-${++historyNextId}`,
     executedAt: new Date().toISOString(),
-    dataSourceName: dataSourceNames[item.dataSourceId] ?? `DataSource ${item.dataSourceId}`,
   }
   mockHistoryItems.unshift(entry)
   return entry

@@ -37,7 +37,7 @@ export const queryHandlers = [
     await delay(500 + Math.random() * 800)
 
     const body = (await request.json()) as ExecuteQueryRequest
-    const { sql, dataSourceId, schema, limitRows } = body
+    const { sql, schema, limitRows } = body
 
     if (!sql.trim()) {
       return HttpResponse.json({ message: '쿼리를 입력해주세요.' }, { status: 400 })
@@ -58,8 +58,6 @@ export const queryHandlers = [
 
       const historyEntry = addMockHistory({
         sql,
-        dataSourceId,
-        dataSourceName: '',
         schema,
         rowCount: rows.length,
         executionTimeMs,
@@ -78,8 +76,6 @@ export const queryHandlers = [
 
     addMockHistory({
       sql,
-      dataSourceId,
-      dataSourceName: '',
       schema,
       rowCount: 0,
       executionTimeMs,
@@ -103,10 +99,7 @@ export const queryHandlers = [
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? '0')
     const size = Number(url.searchParams.get('size') ?? '20')
-    const dataSourceId = url.searchParams.get('dataSourceId')
-      ? Number(url.searchParams.get('dataSourceId'))
-      : undefined
 
-    return HttpResponse.json(getMockHistory({ page, size, dataSourceId }))
+    return HttpResponse.json(getMockHistory({ page, size }))
   }),
 ]

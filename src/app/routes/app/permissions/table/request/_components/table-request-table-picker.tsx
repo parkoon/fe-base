@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { CheckIcon, TableIcon } from 'lucide-react'
 
-import { getDatasourceTablesQueryOptions } from '@/api/datasources/get-datasource-tables'
+import { getSchemaTablesQueryOptions } from '@/api/schemas/get-schema-tables'
 import { cn } from '@/lib/utils'
 
 import { useTablePermissionRequest } from '../_context/table-request-context'
@@ -19,8 +19,7 @@ export function TableRequestTablePicker() {
 
   return (
     <TableList
-      datasourceId={state.selectedSchema.datasourceId}
-      schemaName={state.selectedSchema.schemaName}
+      schemaName={state.selectedSchema.name}
       selectedTables={state.selectedTables}
       onToggleTable={actions.toggleTable}
     />
@@ -28,14 +27,13 @@ export function TableRequestTablePicker() {
 }
 
 type TableListProps = {
-  datasourceId: number
   schemaName: string
   selectedTables: { tableName: string; tableComment: string }[]
   onToggleTable: (table: { tableName: string; tableComment: string }) => void
 }
 
-function TableList({ datasourceId, schemaName, selectedTables, onToggleTable }: TableListProps) {
-  const tablesQuery = useSuspenseQuery(getDatasourceTablesQueryOptions(datasourceId, schemaName))
+function TableList({ schemaName, selectedTables, onToggleTable }: TableListProps) {
+  const tablesQuery = useSuspenseQuery(getSchemaTablesQueryOptions(schemaName))
 
   const isSelected = (tableName: string) => selectedTables.some((t) => t.tableName === tableName)
 
