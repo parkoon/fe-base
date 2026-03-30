@@ -4,26 +4,44 @@ import { CheckIcon, TableIcon } from 'lucide-react'
 import { getDatasourceTablesQueryOptions } from '@/api/datasources/get-datasource-tables'
 import { cn } from '@/lib/utils'
 
-type TablePickerProps = {
+import { useTablePermissionRequest } from '../_context/table-request-context'
+
+export function TableRequestTablePicker() {
+  const { state, actions } = useTablePermissionRequest()
+
+  if (!state.selectedSchema) {
+    return (
+      <div className="text-muted-foreground rounded-lg border py-10 text-center text-sm">
+        스키마를 선택하면 테이블 목록이 표시됩니다
+      </div>
+    )
+  }
+
+  return (
+    <TableList
+      datasourceId={state.selectedSchema.datasourceId}
+      schemaName={state.selectedSchema.schemaName}
+      selectedTables={state.selectedTables}
+      onToggleTable={actions.toggleTable}
+    />
+  )
+}
+
+type TableListProps = {
   datasourceId: number
-  schema: string
+  schemaName: string
   selectedTables: { tableName: string; tableComment: string }[]
   onToggleTable: (table: { tableName: string; tableComment: string }) => void
 }
 
-export function RequestPermissionTablePicker({
-  datasourceId,
-  schema,
-  selectedTables,
-  onToggleTable,
-}: TablePickerProps) {
-  const tablesQuery = useSuspenseQuery(getDatasourceTablesQueryOptions(datasourceId, schema))
+function TableList({ datasourceId, schemaName, selectedTables, onToggleTable }: TableListProps) {
+  const tablesQuery = useSuspenseQuery(getDatasourceTablesQueryOptions(datasourceId, schemaName))
 
   const isSelected = (tableName: string) => selectedTables.some((t) => t.tableName === tableName)
 
   return (
     <div className="rounded-lg border">
-      <ul className="max-h-[240px] overflow-y-auto">
+      <ul className="max-h-[360px] overflow-y-auto">
         {tablesQuery.data.length === 0 ? (
           <li className="text-muted-foreground py-6 text-center text-sm">테이블이 없습니다</li>
         ) : (

@@ -24,7 +24,7 @@ function MyPermissionsPage() {
           asChild
           size="lg"
         >
-          <Link to={paths.app.permissions.request.getHref()}>
+          <Link to={paths.app.permissions.table.getHref()}>
             <PlusIcon className="size-4" />
             권한 신청
           </Link>

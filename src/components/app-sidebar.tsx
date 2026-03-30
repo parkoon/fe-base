@@ -40,16 +40,16 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
-    label: '웹쿼리',
+    label: 'SQL',
     items: [
       {
         title: 'SQL 에디터',
-        url: paths.app.query.editor.getHref(),
+        url: paths.app.sql.editor.getHref(),
         icon: <TerminalSquareIcon />,
       },
       {
         title: '실행 이력',
-        url: paths.app.query.history.getHref(),
+        url: paths.app.sql.history.getHref(),
         icon: <HistoryIcon />,
       },
     ],
@@ -59,7 +59,7 @@ const navGroups: NavGroup[] = [
     items: [
       {
         title: '권한 신청',
-        url: paths.app.permissions.request.getHref(),
+        url: paths.app.permissions.table.getHref(),
         icon: <SendIcon />,
       },
       {

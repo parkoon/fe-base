@@ -28,9 +28,9 @@ export const paths = {
 
     // 권한 관리
     permissions: {
-      request: {
-        path: 'permissions/request',
-        getHref: () => '/app/permissions/request',
+      table: {
+        path: 'permissions/table',
+        getHref: () => '/app/permissions/table',
       },
       my: {
         path: 'permissions/my',
@@ -55,14 +55,14 @@ export const paths = {
     },
 
     // 웹쿼리
-    query: {
+    sql: {
       editor: {
-        path: 'query',
-        getHref: () => '/app/query',
+        path: 'sql',
+        getHref: () => '/app/sql',
       },
       history: {
-        path: 'query/history',
-        getHref: () => '/app/query/history',
+        path: 'sql/history',
+        getHref: () => '/app/sql/history',
       },
     },
 

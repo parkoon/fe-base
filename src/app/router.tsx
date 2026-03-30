@@ -84,18 +84,18 @@ const createAppRouter = (queryClient: QueryClient) =>
 
         // 웹쿼리
         {
-          path: paths.app.query.editor.path,
-          lazy: () => import('./routes/app/query/editor/page').then(convert(queryClient)),
+          path: paths.app.sql.editor.path,
+          lazy: () => import('./routes/app/sql/editor/page').then(convert(queryClient)),
         },
         {
-          path: paths.app.query.history.path,
-          lazy: () => import('./routes/app/query/history/page').then(convert(queryClient)),
+          path: paths.app.sql.history.path,
+          lazy: () => import('./routes/app/sql/history/page').then(convert(queryClient)),
         },
 
         // 권한관리
         {
-          path: paths.app.permissions.request.path,
-          lazy: () => import('./routes/app/permissions/request/page').then(convert(queryClient)),
+          path: paths.app.permissions.table.path,
+          lazy: () => import('./routes/app/permissions/table/page').then(convert(queryClient)),
         },
         {
           path: paths.app.permissions.my.path,

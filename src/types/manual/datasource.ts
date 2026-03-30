@@ -27,6 +27,13 @@ export type TableInfo = {
   hasPermission: boolean
 }
 
+export type SchemaWithDatasource = {
+  datasourceId: number
+  datasourceName: string
+  schemaName: string
+  tableCount: number
+}
+
 export type ColumnInfo = {
   name: string
   type: string

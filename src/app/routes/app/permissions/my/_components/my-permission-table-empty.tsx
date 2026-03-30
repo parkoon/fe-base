@@ -20,7 +20,7 @@ export function MyPermissionTableEmpty() {
             variant="outline"
             size="sm"
           >
-            <Link to={paths.app.permissions.request.getHref()}>
+            <Link to={paths.app.permissions.table.getHref()}>
               <PlusIcon className="size-3.5" />
               권한 신청하기
             </Link>

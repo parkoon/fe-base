@@ -1,10 +1,16 @@
 import { delay, http, HttpResponse } from 'msw'
 
 import { mockDatasources } from '../data/datasources'
-import { mockSchemas } from '../data/schemas'
+import { mockAllSchemas, mockSchemas } from '../data/schemas'
 import { mockColumns, mockTables } from '../data/tables'
 
 export const datasourceHandlers = [
+  // GET /api/schemas (전체 스키마 목록)
+  http.get('*/api/schemas', async () => {
+    await delay(300)
+    return HttpResponse.json(mockAllSchemas)
+  }),
+
   // GET /api/datasources
   http.get('*/api/datasources', async () => {
     await delay(300)

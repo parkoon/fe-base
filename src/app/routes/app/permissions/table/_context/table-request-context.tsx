@@ -5,24 +5,20 @@ import { toast } from 'sonner'
 import { usePostPermissionsRequestMutation } from '@/api/permissions/post-permissions-request'
 import { paths } from '@/config/paths'
 import { $dayjs } from '@/lib/dayjs'
+import type { SchemaWithDatasource } from '@/types/manual/datasource'
 
 type SelectedTable = { tableName: string; tableComment: string }
 
-type RequestFormState = {
-  step: number
-  datasourceId: number | null
-  datasourceName: string
-  schema: string | null
+type TablePermissionRequestState = {
+  selectedSchema: SchemaWithDatasource | null
   selectedTables: SelectedTable[]
   reason: string
   startDate: Date | undefined
   endDate: Date | undefined
 }
 
-type RequestFormActions = {
-  setStep: (step: number) => void
-  changeDatasource: (id: number, name: string) => void
-  changeSchema: (schema: string) => void
+type TablePermissionRequestActions = {
+  selectSchema: (schema: SchemaWithDatasource) => void
   toggleTable: (table: SelectedTable) => void
   removeTable: (tableName: string) => void
   setReason: (reason: string) => void
@@ -31,42 +27,34 @@ type RequestFormActions = {
   submit: () => void
 }
 
-type PermissionRequestContextValue = {
-  state: RequestFormState
-  actions: RequestFormActions
-  canProceed: boolean
+type TablePermissionRequestContextValue = {
+  state: TablePermissionRequestState
+  actions: TablePermissionRequestActions
+  canSubmit: boolean
   isSubmitting: boolean
 }
 
-const PermissionRequestContext = createContext<PermissionRequestContextValue | null>(null)
+const TablePermissionRequestContext = createContext<TablePermissionRequestContextValue | null>(null)
 
-export function usePermissionRequest() {
-  const ctx = useContext(PermissionRequestContext)
-  if (!ctx) throw new Error('usePermissionRequest must be used within PermissionRequestProvider')
+export function useTablePermissionRequest() {
+  const ctx = useContext(TablePermissionRequestContext)
+  if (!ctx)
+    throw new Error('useTablePermissionRequest must be used within TablePermissionRequestProvider')
   return ctx
 }
 
-export function PermissionRequestProvider({ children }: { children: React.ReactNode }) {
+export function TablePermissionRequestProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const mutation = usePostPermissionsRequestMutation()
 
-  const [step, setStep] = useState(1)
-  const [datasourceId, setDatasourceId] = useState<number | null>(null)
-  const [datasourceName, setDatasourceName] = useState('')
-  const [schema, setSchema] = useState<string | null>(null)
+  const [selectedSchema, setSelectedSchema] = useState<SchemaWithDatasource | null>(null)
   const [selectedTables, setSelectedTables] = useState<SelectedTable[]>([])
   const [reason, setReason] = useState('')
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
 
-  const changeDatasource = (id: number, name: string) => {
-    setDatasourceId(id)
-    setDatasourceName(name)
-    setSelectedTables([])
-  }
-
-  const changeSchema = (s: string) => {
-    setSchema(s)
+  const selectSchema = (schema: SchemaWithDatasource) => {
+    setSelectedSchema(schema)
     setSelectedTables([])
   }
 
@@ -83,12 +71,12 @@ export function PermissionRequestProvider({ children }: { children: React.ReactN
   }
 
   const submit = () => {
-    if (!datasourceId || !schema || !startDate || !endDate) return
+    if (!selectedSchema || !startDate || !endDate) return
 
     mutation.mutate(
       {
-        datasourceId,
-        schema,
+        datasourceId: selectedSchema.datasourceId,
+        schema: selectedSchema.schemaName,
         tables: selectedTables,
         reason: reason.trim(),
         startDate: $dayjs(startDate).format('YYYY-MM-DD'),
@@ -103,29 +91,17 @@ export function PermissionRequestProvider({ children }: { children: React.ReactN
     )
   }
 
-  const canProceed = (() => {
-    if (step === 1) return datasourceId !== null && schema !== null && schema.length > 0
-    if (step === 2) return selectedTables.length > 0
-    if (step === 3)
-      return reason.trim().length > 0 && startDate !== undefined && endDate !== undefined
-    return false
-  })()
+  const canSubmit =
+    selectedSchema !== null &&
+    selectedTables.length > 0 &&
+    reason.trim().length > 0 &&
+    startDate !== undefined &&
+    endDate !== undefined
 
-  const value: PermissionRequestContextValue = {
-    state: {
-      step,
-      datasourceId,
-      datasourceName,
-      schema,
-      selectedTables,
-      reason,
-      startDate,
-      endDate,
-    },
+  const value: TablePermissionRequestContextValue = {
+    state: { selectedSchema, selectedTables, reason, startDate, endDate },
     actions: {
-      setStep,
-      changeDatasource,
-      changeSchema,
+      selectSchema,
       toggleTable,
       removeTable,
       setReason,
@@ -133,11 +109,13 @@ export function PermissionRequestProvider({ children }: { children: React.ReactN
       setEndDate,
       submit,
     },
-    canProceed,
+    canSubmit,
     isSubmitting: mutation.isPending,
   }
 
   return (
-    <PermissionRequestContext.Provider value={value}>{children}</PermissionRequestContext.Provider>
+    <TablePermissionRequestContext.Provider value={value}>
+      {children}
+    </TablePermissionRequestContext.Provider>
   )
 }
