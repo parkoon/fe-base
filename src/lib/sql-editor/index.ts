@@ -1,2 +1,3 @@
 export { SQLEditor } from './sql-editor'
-export { useSQLEditorAction, useSQLEditorValue } from './store'
+export type { SQLEditorProps, SQLEditorSchema } from './types'
+export { useSQLEditor } from './use-sql-editor'

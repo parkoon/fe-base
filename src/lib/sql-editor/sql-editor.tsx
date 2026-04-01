@@ -1,104 +1,147 @@
-import { sql } from '@codemirror/lang-sql'
-import { Compartment, EditorState } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
-import { basicSetup } from 'codemirror'
-import { useEffect, useRef } from 'react'
+import MonacoEditor from '@monaco-editor/react'
+import type { editor, IDisposable, IPosition, IRange } from 'monaco-editor'
+import { useCallback, useEffect, useRef } from 'react'
 
-import { useSQLEditorAction, useSQLEditorValue } from './store'
+import {
+  buildColumnCompletionItems,
+  buildCompletionItems,
+  extractTableNameBeforeDot,
+} from './sql-language'
+import { registerSQLEditorTheme, THEME_NAME } from './theme'
+import type { SQLEditorProps } from './types'
 
-const sqlCompartment = new Compartment()
-
-type SQLEditorProps = {
-  onRun?: () => void
-}
-
-export function SQLEditor({ onRun }: SQLEditorProps) {
-  const { SQL, schema } = useSQLEditorValue()
-  const { setSQL } = useSQLEditorAction()
-  const containerRef = useRef<HTMLDivElement>(null)
-  const viewRef = useRef<EditorView | null>(null)
+export function SQLEditor({
+  value,
+  onChange,
+  schema = {},
+  onRun,
+  onRunSelection,
+  readOnly = false,
+  height = '100%',
+  onMount: onMountProp,
+}: SQLEditorProps) {
   const onRunRef = useRef(onRun)
-  const setSQLRef = useRef(setSQL)
-
-  onRunRef.current = onRun
-  setSQLRef.current = setSQL
+  const onRunSelectionRef = useRef(onRunSelection)
+  const schemaRef = useRef(schema)
 
   useEffect(() => {
-    if (!containerRef.current) return
+    onRunRef.current = onRun
+  }, [onRun])
 
-    const runQueryKeymap = keymap.of([
-      {
-        key: 'Mod-Enter',
-        run: () => {
-          onRunRef.current?.()
-          return true
-        },
-      },
-    ])
-
-    const updateListener = EditorView.updateListener.of((update) => {
-      if (update.docChanged) {
-        setSQLRef.current(update.state.doc.toString())
-      }
-    })
-
-    const state = EditorState.create({
-      doc: SQL,
-      extensions: [
-        basicSetup,
-        sqlCompartment.of(sql({ schema })),
-        runQueryKeymap,
-        updateListener,
-        EditorView.theme({
-          '&': { height: '100%', fontSize: '13px' },
-          '.cm-scroller': { overflow: 'auto' },
-          '.cm-content': { padding: '8px 0' },
-        }),
-      ],
-    })
-
-    const view = new EditorView({
-      state,
-      parent: containerRef.current,
-    })
-
-    viewRef.current = view
-    view.focus()
-
-    return () => {
-      view.destroy()
-      viewRef.current = null
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // schema 변경 시 sql extension 동적 교체
   useEffect(() => {
-    const view = viewRef.current
-    if (!view) return
+    onRunSelectionRef.current = onRunSelection
+  }, [onRunSelection])
 
-    view.dispatch({
-      effects: sqlCompartment.reconfigure(sql({ schema })),
-    })
+  useEffect(() => {
+    schemaRef.current = schema
   }, [schema])
 
-  // 외부 SQL 변경 시 에디터 동기화 (예: 저장된 쿼리 선택 변경)
-  useEffect(() => {
-    const view = viewRef.current
-    if (!view) return
+  const handleMount = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (editorInstance: editor.IStandaloneCodeEditor, monaco: any) => {
+      registerSQLEditorTheme(monaco as Parameters<typeof registerSQLEditorTheme>[0])
+      ;(monaco as { editor: { setTheme: (name: string) => void } }).editor.setTheme(THEME_NAME)
 
-    const currentValue = view.state.doc.toString()
-    if (currentValue !== SQL) {
-      view.dispatch({
-        changes: { from: 0, to: currentValue.length, insert: SQL },
+      // Cmd/Ctrl+Enter → run query
+      editorInstance.addAction({
+        id: 'sql-run-query',
+        label: 'Run Query',
+        keybindings: [
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+        ],
+        run: () => {
+          onRunRef.current?.()
+        },
       })
-    }
-  }, [SQL])
+
+      // Cmd/Ctrl+Shift+Enter → run selection
+      editorInstance.addAction({
+        id: 'sql-run-selection',
+        label: 'Run Selection',
+        keybindings: [
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter,
+        ],
+        run: (ed) => {
+          const selection = ed.getSelection()
+          const selectedText = selection ? (ed.getModel()?.getValueInRange(selection) ?? '') : ''
+          const textToRun = selectedText.trim() || ed.getValue()
+          onRunSelectionRef.current?.(textToRun)
+        },
+      })
+
+      // Schema-aware autocomplete
+      let completionDisposable: IDisposable | null = null
+
+      const registerCompletion = () => {
+        completionDisposable?.dispose()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        completionDisposable = monaco.languages.registerCompletionItemProvider('sql', {
+          triggerCharacters: ['.', ' '],
+          provideCompletionItems: (model: editor.ITextModel, position: IPosition) => {
+            const range: IRange = {
+              startLineNumber: position.lineNumber,
+              startColumn: 1,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
+            }
+            const textUntilPosition = model.getValueInRange(range)
+
+            const tableName = extractTableNameBeforeDot(textUntilPosition)
+
+            if (tableName && schemaRef.current[tableName]) {
+              return {
+                suggestions: buildColumnCompletionItems(tableName, schemaRef.current),
+              }
+            }
+
+            return {
+              suggestions: buildCompletionItems(schemaRef.current),
+            }
+          },
+        }) as IDisposable
+
+        return completionDisposable
+      }
+
+      registerCompletion()
+
+      editorInstance.onDidDispose(() => {
+        completionDisposable?.dispose()
+      })
+
+      onMountProp?.(editorInstance)
+    },
+    [onMountProp]
+  )
 
   return (
-    <div
-      ref={containerRef}
-      className="h-full"
+    <MonacoEditor
+      language="sql"
+      value={value}
+      onChange={(v) => onChange(v ?? '')}
+      onMount={handleMount}
+      height={height}
+      options={{
+        minimap: { enabled: false },
+        fontSize: 13,
+        tabSize: 2,
+        wordWrap: 'on',
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        padding: { top: 8 },
+        readOnly,
+        lineNumbersMinChars: 3,
+        folding: true,
+        renderLineHighlight: 'line',
+        suggestOnTriggerCharacters: true,
+        quickSuggestions: true,
+        scrollbar: {
+          verticalScrollbarSize: 8,
+          horizontalScrollbarSize: 8,
+        },
+      }}
     />
   )
 }

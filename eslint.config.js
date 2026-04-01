@@ -27,7 +27,7 @@ export default defineConfig(
       globals: globals.browser,
       parserOptions: {
         // 타입 체크를 위해 tsconfig 연결
-        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        project: ['./tsconfig.app.json', './tsconfig.node.json', './tsconfig.test.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },

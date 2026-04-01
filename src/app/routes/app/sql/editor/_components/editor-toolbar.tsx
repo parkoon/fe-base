@@ -3,25 +3,24 @@ import { toast } from 'sonner'
 
 import { useCreateQueryMutation } from '@/api/queries/create-query'
 import { Button } from '@/components/ui/button'
-import { useSQLEditorValue } from '@/lib/sql-editor'
 
 import { LimitSelect } from './limit-select'
 import { SaveQueryDialog } from './save-query-dialog'
 import { SchemaSelect } from './schema-select'
 
 type EditorToolbarProps = {
+  sql: string
   onRun: () => void
   isRunning: boolean
 }
-export function EditorToolbar({ onRun, isRunning }: EditorToolbarProps) {
+export function EditorToolbar({ sql, onRun, isRunning }: EditorToolbarProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const { SQL } = useSQLEditorValue()
 
   const createQueryMutation = useCreateQueryMutation()
 
   const handleSave = (name: string, memo?: string, onSuccess?: () => void) => {
     createQueryMutation.mutate(
-      { name, sql: SQL, memo },
+      { name, sql, memo },
       {
         onSuccess: (saved) => {
           toast(`"${saved.name}" 쿼리가 저장되었습니다.`)

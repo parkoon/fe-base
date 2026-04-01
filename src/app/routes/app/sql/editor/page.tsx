@@ -1,6 +1,6 @@
 import { AsyncBoundary } from '@/components/errors'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { SQLEditor, useSQLEditorValue } from '@/lib/sql-editor'
+import { SQLEditor, useSQLEditor } from '@/lib/sql-editor'
 import { useQueryTableStore } from '@/stores/query-table-store'
 
 import { EditorToolbar } from './_components/editor-toolbar'
@@ -11,18 +11,18 @@ import { useQueryExecution } from './_hooks/use-query-execution'
 function QueryEditorPage() {
   const { limitRows } = useQueryTableStore()
 
-  const { SQL } = useSQLEditorValue()
+  const editor = useSQLEditor()
   const { result, error, isRunning, execute } = useQueryExecution()
 
   const handleRun = () => {
-    void execute(SQL, limitRows)
+    void execute(editor.value, limitRows)
   }
 
   return (
     <div className="-m-4 flex flex-1 overflow-hidden">
       <div className="w-52 shrink-0">
         <AsyncBoundary loadingFallback={<div className="h-full border-r" />}>
-          <QuerySidebar />
+          <QuerySidebar onLoadQuery={(sql) => editor.setValue(sql)} />
         </AsyncBoundary>
       </div>
 
@@ -31,6 +31,7 @@ function QueryEditorPage() {
         {/* Toolbar */}
         <AsyncBoundary loadingFallback={<div className="h-11 shrink-0 border-b" />}>
           <EditorToolbar
+            sql={editor.value}
             onRun={handleRun}
             isRunning={isRunning}
           />
@@ -46,7 +47,10 @@ function QueryEditorPage() {
             defaultSize={55}
             minSize={20}
           >
-            <SQLEditor onRun={handleRun} />
+            <SQLEditor
+              {...editor.editorProps}
+              onRun={handleRun}
+            />
           </ResizablePanel>
 
           <ResizableHandle />
